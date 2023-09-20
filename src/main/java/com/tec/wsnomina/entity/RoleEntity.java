@@ -1,29 +1,27 @@
 package com.tec.wsnomina.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "sucursal")
-public class SucursalEntity {
+@Table(name = "role")
+public class RoleEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "IdSucursal")
-	private int idSucursal;
+	@Column(name = "IdRole")
+	private int idRole;
 	
 	@Column(name = "Nombre")
 	private String nombre;
-	
-	@Column(name = "Direccion")
-	private String direccion = "";
-	
-	@Column(name = "IdEmpresa")
-	private int idEmpresa;
 	
 	@Column(name = "FechaCreacion")
 	private String fechaCreacion = "";
@@ -36,39 +34,36 @@ public class SucursalEntity {
    
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
-
-	public int getIdSucursal() {
-		return idSucursal;
+	
+	@ManyToMany(mappedBy = "roles")
+	private Set<UsuarioEntity> usuarios = new HashSet<>();
+	
+	
+	public Set<UsuarioEntity> getUsuarios() {
+		return usuarios;
 	}
 
-	public void setIdSucursal(int idSucursal) {
-		this.idSucursal = idSucursal;
+	public void setUsuarios(Set<UsuarioEntity> usuarios) {
+		this.usuarios = usuarios;
+	}
+
+	public int getIdRole() {
+		return idRole;
+	}
+
+	public void setIdRole(int idRole) {
+		this.idRole = idRole;
 	}
 
 	public String getNombre() {
-		return nombre;
+		return this.nombre;
 	}
-
-	public void setNombre(String nombre) {
+	
+	public void setNombre(String nombre)
+	{
 		this.nombre = nombre;
 	}
-
-	public String getDireccion() {
-		return direccion;
-	}
-
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
-	}
-
-	public int getIdEmpresa() {
-		return idEmpresa;
-	}
-
-	public void setIdEmpresa(int idEmpresa) {
-		this.idEmpresa = idEmpresa;
-	}
-
+	
 	public String getFechaCreacion() {
 		return fechaCreacion;
 	}
@@ -100,6 +95,4 @@ public class SucursalEntity {
 	public void setUsuarioModificacion(String usuarioModificacion) {
 		this.usuarioModificacion = usuarioModificacion;
 	}
-   
-	
 }

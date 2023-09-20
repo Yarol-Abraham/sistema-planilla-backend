@@ -1,9 +1,17 @@
 package com.tec.wsnomina.entity;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -70,6 +78,20 @@ public class UsuarioEntity {
    
    @Column(name = "UsuarioModificacion")
    private String usuarioModificacion = null;
+ 
+   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   @JoinTable(name = "usuario_role",
+              joinColumns = @JoinColumn(name = "IdUsuario"),
+              inverseJoinColumns = @JoinColumn(name = "IdRole"))
+   private Set<RoleEntity> roles = new HashSet<>();
+   
+	public Set<RoleEntity> getRoles() {
+		return roles;
+	}
+	
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
+	}
 
 	public String getIdUsuario() {
 		return idUsuario;
@@ -229,6 +251,19 @@ public class UsuarioEntity {
 	
 	public void setUsuarioModificacion(String usuarioModificacion) {
 		this.usuarioModificacion = usuarioModificacion;
+	}
+
+	@Override
+	public String toString() {
+		return "UsuarioEntity [idUsuario=" + idUsuario + ", nombre=" + nombre + ", apellido=" + apellido
+				+ ", fechaNacimiento=" + fechaNacimiento + ", idStatusUsuario=" + idStatusUsuario + ", password="
+				+ password + ", idGenero=" + idGenero + ", ultimaFechaIngreso=" + ultimaFechaIngreso
+				+ ", intentosDeAcceso=" + intentosDeAcceso + ", sesionActual=" + sesionActual
+				+ ", ultimaFechaCambioPassword=" + ultimaFechaCambioPassword + ", correoElectronico="
+				+ correoElectronico + ", requiereCambiarPassword=" + requiereCambiarPassword + ", fotografia="
+				+ fotografia + ", telefonoMovil=" + telefonoMovil + ", idSucursal=" + idSucursal + ", fechaCreacion="
+				+ fechaCreacion + ", usuarioCreacion=" + usuarioCreacion + ", fechaModificacion=" + fechaModificacion
+				+ ", usuarioModificacion=" + usuarioModificacion + ", roles=" + roles + "]";
 	}
 	   
 }

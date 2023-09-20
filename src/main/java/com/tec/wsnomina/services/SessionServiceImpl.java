@@ -1,13 +1,20 @@
 package com.tec.wsnomina.services;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tec.wsnomina.dto.RoleDto;
+import com.tec.wsnomina.entity.EmpresaEntity;
 import com.tec.wsnomina.entity.SessionCredentials;
 import com.tec.wsnomina.entity.SessionInformationResponse;
+import com.tec.wsnomina.entity.SucursalEntity;
 import com.tec.wsnomina.entity.UsuarioEntity;
+import com.tec.wsnomina.repository.IEmpresaRepository;
+import com.tec.wsnomina.repository.ISucursalRepository;
 import com.tec.wsnomina.repository.IUsuarioRepository;
 import com.tec.wsnomina.security.GenerateToken;
 import com.tec.wsnomina.security.PasswordEncrypt;
@@ -20,6 +27,12 @@ public class SessionServiceImpl implements SessionService {
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
+	@Autowired
+	private ISucursalRepository iSucursalRepository;
+	
+	@Autowired
+	private IEmpresaRepository iEmpresaRepository;
+	
 	private UsuarioEntity usuarioEntity = new UsuarioEntity();
 	
 	private SessionInformationResponse sessionInformationResponse = new SessionInformationResponse();
@@ -27,10 +40,6 @@ public class SessionServiceImpl implements SessionService {
 	private Methods methods = new Methods();
 	private PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
 	private GenerateToken generateToken = new GenerateToken();
-	
-	private final int RESET_ACCESS = 0;
-	private final int MAX_FAILED_ATTEMPTS = 5;
-	private final int STATUS_LOCKED = 2;
 	
 	@Override
 	public SessionInformationResponse generateSessionByUser(SessionCredentials sessionCredentials)
@@ -64,10 +73,30 @@ public class SessionServiceImpl implements SessionService {
 				return sessionInformationResponse;
 			}
 			
+			if(searchUser.get().getIdStatusUsuario() == methods.GETSTATUS_LOCKED() )
+			{
+				sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
+				sessionInformationResponse.setStrResponseMessage("NO SE PUEDE INICIAR SESIÓN, USUARIO BLOQUEADO");
+				return sessionInformationResponse;
+			}
+			
+			if(searchUser.get().getIdStatusUsuario() == methods.GETSTATUS_DOWN() )
+			{
+				sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
+				sessionInformationResponse.setStrResponseMessage("NO SE PUEDE INICIAR SESIÓN, USUARIO INACTIVO");
+				return sessionInformationResponse;
+			}
+			
 			if(this.passwordEncrypt.CompareToPasswords(searchUser.get().getPassword(), sessionCredentials.getPassword()))
 			{
-				String generateToken = GenerateToken.createToken(sessionCredentials.getCorreoElectronico());
+			
+				List<RoleDto> roles = searchUser.get().getRoles()
+								.stream()
+								.map(rol -> new RoleDto(rol.getIdRole(), rol.getNombre()))
+								.collect(Collectors.toList());
 				
+				String generateToken = GenerateToken.createToken(sessionCredentials.getCorreoElectronico());
+				sessionInformationResponse.setListRoles(roles);
 				sessionInformationResponse.setStrSessionId(generateToken);
 				sessionInformationResponse.setStrNombre(searchUser.get().getNombre());
 				sessionInformationResponse.setStrIdUsuario(searchUser.get().getIdUsuario());
@@ -79,7 +108,7 @@ public class SessionServiceImpl implements SessionService {
 				usuarioEntity = searchUser.get();
 				usuarioEntity.setSesionActual(generateToken);
 				usuarioEntity.setUltimaFechaIngreso(utils.getFechaHoraFormateada());
-				usuarioEntity.setIntentosDeAcceso(RESET_ACCESS);
+				usuarioEntity.setIntentosDeAcceso(this.methods.GETRESET_ACCESS());
 				this.iUsuarioRepository.save(usuarioEntity);
 				
 				return sessionInformationResponse;
@@ -106,6 +135,22 @@ public class SessionServiceImpl implements SessionService {
 	{
 		try
 		{
+			if(sessionId.isEmpty())
+			{
+				sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
+				sessionInformationResponse.setStrResponseMessage("NO SE PUEDE REALIZAR LA OPERACIÓN, NO EXISTE SESIÓN DE USUARIO");
+				return sessionInformationResponse;
+			}
+			
+			if(!sessionId.startsWith("Bearer"))
+			{
+				sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
+				sessionInformationResponse.setStrResponseMessage("NO SE PUEDE REALIZAR LA OPERACIÓN, NO EXISTE SESIÓN DE USUARIO");
+				return sessionInformationResponse;
+			}
+			
+			sessionId = sessionId.replace("Bearer", "");
+		
 			String correoEelectronicoToken = generateToken.getCorreoElectronicoToken(sessionId);
 			
 			if(correoEelectronicoToken.equals(methods.GETERROR())) 
@@ -131,7 +176,6 @@ public class SessionServiceImpl implements SessionService {
 				sessionInformationResponse.setStrResponseMessage("CREDENCIALES INVÁLIDAS, verifica que tu correo sea correcto");
 				return sessionInformationResponse;
 			}
-			
 				
 			sessionInformationResponse.setStrSessionId(sessionId);
 			sessionInformationResponse.setStrNombre(searchUser.get().getNombre());
@@ -142,8 +186,6 @@ public class SessionServiceImpl implements SessionService {
 			sessionInformationResponse.setStrResponseMessage("SUCCESS");
 			
 			return sessionInformationResponse;
-			
-			
 		}	
 		catch(Exception ex)
 		{
@@ -168,9 +210,19 @@ public class SessionServiceImpl implements SessionService {
 	{
 		try
 		{
-			if(MAX_FAILED_ATTEMPTS == usuarioEntity.getIntentosDeAcceso())
+			Optional<SucursalEntity> sucursal = this.iSucursalRepository.findById(usuarioEntity.getIdSucursal());
+			
+			if(sucursal.isEmpty())
+				return;
+			
+			Optional<EmpresaEntity> empresa = this.iEmpresaRepository.findByIdEmpresa(sucursal.get().getIdEmpresa());
+			
+			if(empresa.isEmpty())
+				return;
+			
+			if(empresa.get().getPasswordIntentosAntesDeBloquear() <= usuarioEntity.getIntentosDeAcceso())
 			{
-				 usuarioEntity.setIdStatusUsuario(STATUS_LOCKED);
+				 usuarioEntity.setIdStatusUsuario(this.methods.GETSTATUS_LOCKED());
 				 this.iUsuarioRepository.save(usuarioEntity);
 			}
 			else
@@ -183,7 +235,6 @@ public class SessionServiceImpl implements SessionService {
 		{
 			System.out.println("ERROR EN: SessionServiceImpl.systemFailCount() " + ex.getMessage());
 		}
-		
 	}
 	
 	private void resetValuesSessionInformationResponse()

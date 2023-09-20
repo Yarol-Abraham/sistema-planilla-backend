@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tec.wsnomina.entity.SessionInformationResponse;
 import com.tec.wsnomina.entity.UsuarioEntity;
 import com.tec.wsnomina.entity.UsuarioResponse;
 import com.tec.wsnomina.repository.IUsuarioRepository;
@@ -20,10 +21,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
 	
+	// services
+	@Autowired
+	private SessionServiceImpl sessionServiceImpl;
+	
 	// entity
 	private UsuarioResponse usuarioResponse = new UsuarioResponse();
 	
-	// utils
+	// utilities
 	private Utils utils = new Utils();
 	private Methods methods = new Methods();
 	private PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
@@ -33,10 +38,19 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private int ACTIVO = 1;
 	
 	@Override
-	public UsuarioResponse createUser(UsuarioEntity usuarioEntity) 
+	public UsuarioResponse createUser(UsuarioEntity usuarioEntity, String sessionId) 
 	{
 		try
 		{
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return usuarioResponse;
+			}
+						
 			usuarioEntity =  cleanValues(usuarioEntity, "CREATE");
 			
 			if(usuarioResponse.getStrResponseCode().equals(methods.GETERROR()))
@@ -54,7 +68,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuarioEntity.setIdUsuario(usuarioEntity.getNombre());
 			usuarioEntity.setFechaCreacion(utils.getFechaHoraFormateada());
 			usuarioEntity.setPassword(passwordEncrypt.generateEncrypt(usuarioEntity.getPassword()));
-			
+			usuarioEntity.setUsuarioCreacion(sessionInformationResponse.getStrNombre());
 			usuarioEntity = this.iUsuarioRepository.save(usuarioEntity);
 			usuarioEntity.setPassword("");
 			
@@ -72,16 +86,33 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public UsuarioResponse updateUser(UsuarioEntity usuarioEntity) 
+	public UsuarioResponse updateUser(UsuarioEntity usuarioEntity, String sessionId) 
 	{
 		try
 		{
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return usuarioResponse;
+			}
+			
+			System.out.println("USUARIO: " + usuarioEntity);
+			
+			
 			usuarioEntity = cleanValues(usuarioEntity, "UPDATE");
+			
+
+			System.out.println("USUARIO: " + usuarioEntity);
+			
 			
 			if(usuarioResponse.getStrResponseCode().equals(methods.GETERROR()))
 				return usuarioResponse;
 			
 			Optional<UsuarioEntity> usuario = this.iUsuarioRepository.findById(usuarioEntity.getIdUsuario());
+			
 			if(usuario.isEmpty())
 			{
 				usuarioResponse.setStrResponseCode(methods.GETRESOURCE_NOT_FOUND());
@@ -100,8 +131,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usuario.get().setFotografia(usuarioEntity.getFotografia());
 			
 			usuario.get().setFechaModificacion(utils.getFechaHoraFormateada());
-			
-			// TODO: OBTENER LA SESION ACTUAL PARA OBTENER DATOS DEL USUARIO QUE ESTA MODIFICANDO
+			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrNombre());
 			
 			this.iUsuarioRepository.save(usuario.get());
 			
@@ -111,16 +141,26 @@ public class UsuarioServiceImpl implements UsuarioService {
 		catch(Exception ex)
 		{
 			System.out.println("ERROR EN: UPDATE() " + ex.getMessage());
+			ex.getStackTrace();
 			usuarioResponse.setStrResponseCode(methods.GETERROR());
 			usuarioResponse.setStrResponseMessage("ERROR AL INTENTAR ACTUALIZAR EL USUARIO");
 		}
 		return usuarioResponse;	
 	}
 	
-	public UsuarioResponse deleteUser(String IdUsuario)
+	public UsuarioResponse deleteUser(String IdUsuario, String sessionId)
 	{
 		try
 		{
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return usuarioResponse;
+			}
+			
 			Optional<UsuarioEntity> usuario = this.iUsuarioRepository.findById(IdUsuario);
 			if(usuario.isEmpty())
 			{
@@ -130,6 +170,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 			}
 			
 			usuario.get().setIdStatusUsuario(INACTIVO);
+			usuario.get().setFechaModificacion(utils.getFechaHoraFormateada());
+			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrNombre());
+			
 			this.iUsuarioRepository.save(usuario.get());
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
@@ -138,7 +181,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 		catch(Exception ex)
 		{
-			System.out.println("ERROR EN: Create() " + ex.getMessage());
+			System.out.println("ERROR EN: deleteUser() " + ex.getMessage());
 			usuarioResponse.setStrResponseCode(methods.GETERROR());
 			usuarioResponse.setStrResponseMessage("ERROR AL ELIMINAR EL USUARIO");
 		}
@@ -148,9 +191,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 	// CLEAN VALUES
 	private UsuarioEntity cleanValues(UsuarioEntity usuarioEntity, String OPERATION)
 	{
-		int valid = 0;
-		
 		UsuarioEntity usuarioEntityClean = new UsuarioEntity();
+		usuarioEntityClean.setPassword("");
 		
 		usuarioEntityClean.setIdUsuario(utils.clean(usuarioEntity.getIdUsuario()));
 		usuarioEntityClean.setNombre(utils.clean(usuarioEntity.getNombre()));
@@ -175,8 +217,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 			return usuarioEntityClean;
 		}
 		
-		usuarioEntityClean.setUsuarioCreacion(utils.clean(usuarioEntity.getUsuarioCreacion()));
+		
 		usuarioEntityClean.setPassword(utils.clean(usuarioEntity.getPassword()));
+		
+		
 		usuarioEntityClean.setCorreoElectronico(utils.clean(usuarioEntity.getCorreoElectronico()));
 		
 		if(OPERATION.equals("CREATE"))
@@ -206,7 +250,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		if(usuarioEntity.getSesionActual() != null)
 			usuarioEntityClean.setSesionActual(utils.clean(usuarioEntity.getSesionActual()));
-		
 		
 		return usuarioEntityClean;
 	}

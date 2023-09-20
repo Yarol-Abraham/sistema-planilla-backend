@@ -76,4 +76,11 @@ public class UsuarioRoleEntity {
 		this.usuarioModificacion = usuarioModificacion;
 	}
 
+	@Override
+	public String toString() {
+		return "UsuarioRoleEntity [idUsuario=" + idUsuario + ", idRole=" + idRole + ", fechaCreacion=" + fechaCreacion
+				+ ", usuarioCreacion=" + usuarioCreacion + ", fechaModificacion=" + fechaModificacion
+				+ ", usuarioModificacion=" + usuarioModificacion + "]";
+	}
+
 }

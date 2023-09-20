@@ -18,5 +18,25 @@ public class Methods {
 		return ERROR;
 	}
 	
+	private int RESET_ACCESS = 0;
+	private int STATUS_UP = 1;
+	private int STATUS_DOWN = 3;
+	private int STATUS_LOCKED = 2;
+	
+	public int GETRESET_ACCESS() {
+		return RESET_ACCESS;
+	}
+	
+	public int GETSTATUS_UP() {
+		return STATUS_UP;
+	}
+
+	public int GETSTATUS_DOWN() {
+		return STATUS_DOWN;
+	}
+
+	public int GETSTATUS_LOCKED() {
+		return STATUS_LOCKED;
+	}
 	
 }

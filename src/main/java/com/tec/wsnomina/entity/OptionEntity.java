@@ -8,22 +8,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "sucursal")
-public class SucursalEntity {
+@Table(name = "opcion")
+public class OptionEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "IdSucursal")
-	private int idSucursal;
+	@Column(name = "IdOpcion")
+	private int idOpcion;
+	
+	@Column(name = "IdMenu")
+	private int idMenu;
 	
 	@Column(name = "Nombre")
 	private String nombre;
+
+	@Column(name = "OrdenMenu")
+	private int ordenMenu;
 	
-	@Column(name = "Direccion")
-	private String direccion = "";
-	
-	@Column(name = "IdEmpresa")
-	private int idEmpresa;
+	@Column(name = "Pagina")
+	private String pagina;
 	
 	@Column(name = "FechaCreacion")
 	private String fechaCreacion = "";
@@ -37,12 +40,20 @@ public class SucursalEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
 
-	public int getIdSucursal() {
-		return idSucursal;
+	public int getIdOpcion() {
+		return idOpcion;
 	}
 
-	public void setIdSucursal(int idSucursal) {
-		this.idSucursal = idSucursal;
+	public void setIdOpcion(int idOpcion) {
+		this.idOpcion = idOpcion;
+	}
+
+	public int getIdMenu() {
+		return idMenu;
+	}
+
+	public void setIdMenu(int idMenu) {
+		this.idMenu = idMenu;
 	}
 
 	public String getNombre() {
@@ -53,20 +64,20 @@ public class SucursalEntity {
 		this.nombre = nombre;
 	}
 
-	public String getDireccion() {
-		return direccion;
+	public int getOrdenMenu() {
+		return ordenMenu;
 	}
 
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
+	public void setOrdenMenu(int ordenMenu) {
+		this.ordenMenu = ordenMenu;
 	}
 
-	public int getIdEmpresa() {
-		return idEmpresa;
+	public String getPagina() {
+		return pagina;
 	}
 
-	public void setIdEmpresa(int idEmpresa) {
-		this.idEmpresa = idEmpresa;
+	public void setPagina(String pagina) {
+		this.pagina = pagina;
 	}
 
 	public String getFechaCreacion() {
@@ -100,6 +111,5 @@ public class SucursalEntity {
 	public void setUsuarioModificacion(String usuarioModificacion) {
 		this.usuarioModificacion = usuarioModificacion;
 	}
-   
 	
 }

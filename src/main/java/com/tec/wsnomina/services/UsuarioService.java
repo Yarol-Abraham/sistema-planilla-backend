@@ -5,10 +5,10 @@ import com.tec.wsnomina.entity.UsuarioResponse;
 
 public interface UsuarioService {
 
-	public UsuarioResponse createUser(UsuarioEntity usuarioEntity); // return '00' if is success, '-1' if is error
+	public UsuarioResponse createUser(UsuarioEntity usuarioEntity, String sessionId);
 	
-	public UsuarioResponse updateUser(UsuarioEntity usuarioEntity);  // return '00' if is success, '-1' if is error
+	public UsuarioResponse updateUser(UsuarioEntity usuarioEntity, String sessionId);
 	
-	public UsuarioResponse deleteUser(String IdUsuario); 
+	public UsuarioResponse deleteUser(String IdUsuario, String sessionId); 
 	
 }

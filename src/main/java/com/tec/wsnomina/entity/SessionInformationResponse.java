@@ -1,5 +1,9 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
+import com.tec.wsnomina.dto.RoleDto;
+
 public class SessionInformationResponse {
 
 	private String strResponseCode = "";
@@ -8,7 +12,21 @@ public class SessionInformationResponse {
 	private String strIdUsuario = "";
 	private String strNombre = "";
 	private String strFotografia = "";
+	private int intRoleSelect = 0;
+	private List<RoleDto> listRoles;
 	
+	public  List<RoleDto> getListRoles() {
+		return listRoles;
+	}
+	public void setListRoles(List<RoleDto> listRoles) {
+		this.listRoles = listRoles;
+	}
+	public int getIntRoleSelect() {
+		return intRoleSelect;
+	}
+	public void setIntRoleSelect(int intRole) {
+		this.intRoleSelect = intRole;
+	}
 	public String getStrSessionId() {
 		return strSessionId;
 	}
