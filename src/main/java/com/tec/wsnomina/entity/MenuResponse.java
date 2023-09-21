@@ -1,9 +1,23 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
+import com.tec.wsnomina.dto.ModuloDto;
+
 public class MenuResponse {
 
 	private String strResponseCode = "";
 	private String strResponseMessage = "";
+	//private List<MenuEntity> entMenu;
+	private List<ModuloDto> entModulo;
+	
+	
+	public List<ModuloDto> getEntModulo() {
+		return entModulo;
+	}
+	public void setEntModulo(List<ModuloDto> entModulo) {
+		this.entModulo = entModulo;
+	}
 	
 	public String getStrResponseCode() {
 		return strResponseCode;

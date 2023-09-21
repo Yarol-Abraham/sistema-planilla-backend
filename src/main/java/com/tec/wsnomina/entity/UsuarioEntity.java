@@ -80,9 +80,7 @@ public class UsuarioEntity {
    private String usuarioModificacion = null;
  
    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-   @JoinTable(name = "usuario_role",
-              joinColumns = @JoinColumn(name = "IdUsuario"),
-              inverseJoinColumns = @JoinColumn(name = "IdRole"))
+   @JoinTable(name = "usuario_role",joinColumns = @JoinColumn(name = "IdUsuario"), inverseJoinColumns = @JoinColumn(name = "IdRole"))
    private Set<RoleEntity> roles = new HashSet<>();
    
 	public Set<RoleEntity> getRoles() {

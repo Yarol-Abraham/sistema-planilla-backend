@@ -1,47 +1,60 @@
 package com.tec.wsnomina.entity;
 
+import com.tec.wsnomina.entity.key.RoleOptionKey;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "opcion")
-public class OptionEntity {
+@IdClass(RoleOptionKey.class)
+@Table(name = "role_opcion")
+public class RoleOptionEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "IdRole")
+	private int idRole;
+	
+	@Id
 	@Column(name = "IdOpcion")
 	private int idOpcion;
 	
-	@ManyToOne
-	@JoinColumn(name = "IdMenu", referencedColumnName = "IdMenu")
-	private MenuEntity menu;
+	@Column(name = "Alta")
+	private int alta;
 	
-	@Column(name = "Nombre")
-	private String nombre;
-
-	@Column(name = "OrdenMenu")
-	private int ordenMenu;
+	@Column(name = "Baja")
+	private int baja;
 	
-	@Column(name = "Pagina")
-	private String pagina;
+	@Column(name = "Cambio")
+	private int cambio;
+	
+	@Column(name = "Imprimir")
+	private int imprimir;
+	
+	@Column(name = "Exportar")
+	private int exportar;
 	
 	@Column(name = "FechaCreacion")
 	private String fechaCreacion = "";
-   
+	
 	@Column(name = "UsuarioCreacion")
-	private String usuarioCreacion;
-   
+	private String usuarioCreacion = "";
+	
 	@Column(name = "FechaModificacion")
 	private String fechaModificacion = null;
-   
+	
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
+
+	public int getIdRole() {
+		return idRole;
+	}
+
+	public void setIdRole(int idRole) {
+		this.idRole = idRole;
+	}
 
 	public int getIdOpcion() {
 		return idOpcion;
@@ -50,37 +63,45 @@ public class OptionEntity {
 	public void setIdOpcion(int idOpcion) {
 		this.idOpcion = idOpcion;
 	}
-	
-	public MenuEntity getMenu() {
-		return menu;
+
+	public int getAlta() {
+		return alta;
 	}
 
-	public void setMenu(MenuEntity menu) {
-		this.menu = menu;
+	public void setAlta(int alta) {
+		this.alta = alta;
 	}
 
-	public String getNombre() {
-		return nombre;
+	public int getBaja() {
+		return baja;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
+	public void setBaja(int baja) {
+		this.baja = baja;
 	}
 
-	public int getOrdenMenu() {
-		return ordenMenu;
+	public int getCambio() {
+		return cambio;
 	}
 
-	public void setOrdenMenu(int ordenMenu) {
-		this.ordenMenu = ordenMenu;
+	public void setCambio(int cambio) {
+		this.cambio = cambio;
 	}
 
-	public String getPagina() {
-		return pagina;
+	public int getImprimir() {
+		return imprimir;
 	}
 
-	public void setPagina(String pagina) {
-		this.pagina = pagina;
+	public void setImprimir(int imprimir) {
+		this.imprimir = imprimir;
+	}
+
+	public int getExportar() {
+		return exportar;
+	}
+
+	public void setExportar(int exportar) {
+		this.exportar = exportar;
 	}
 
 	public String getFechaCreacion() {
@@ -116,3 +137,4 @@ public class OptionEntity {
 	}
 	
 }
+

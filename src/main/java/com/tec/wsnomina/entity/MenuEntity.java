@@ -1,10 +1,16 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,14 +22,15 @@ public class MenuEntity {
 	@Column(name = "IdMenu")
 	private int idMenu;
 	
-	@Column(name = "IdModulo")
-	private int idModulo;
+	@ManyToOne
+	@JoinColumn(name = "IdModulo", referencedColumnName = "IdModulo")
+	private ModuloEntity modulo;
 	
 	@Column(name = "Nombre")
 	private String nombre;
 	
 	@Column(name = "OrdenMenu")
-	private int OrdenMenu;
+	private int ordenMenu;
 	
 	@Column(name = "FechaCreacion")
 	private String fechaCreacion = "";
@@ -37,6 +44,17 @@ public class MenuEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
 
+	@OneToMany(mappedBy = "menu")
+	private List<OptionEntity> opciones;
+	
+	public ModuloEntity getModulo() {
+		return modulo;
+	}
+
+	public void setModulo(ModuloEntity modulo) {
+		this.modulo = modulo;
+	}
+
 	public int getIdMenu() {
 		return idMenu;
 	}
@@ -44,13 +62,22 @@ public class MenuEntity {
 	public void setIdMenu(int idMenu) {
 		this.idMenu = idMenu;
 	}
-
+/*
 	public int getIdModulo() {
 		return idModulo;
 	}
 
 	public void setIdModulo(int idModulo) {
 		this.idModulo = idModulo;
+	}
+	*/
+
+	public List<OptionEntity> getOpciones() {
+		return opciones;
+	}
+
+	public void setOpciones(List<OptionEntity> opciones) {
+		this.opciones = opciones;
 	}
 
 	public String getNombre() {
@@ -62,11 +89,11 @@ public class MenuEntity {
 	}
 
 	public int getOrdenMenu() {
-		return OrdenMenu;
+		return ordenMenu;
 	}
 
 	public void setOrdenMenu(int ordenMenu) {
-		OrdenMenu = ordenMenu;
+		this.ordenMenu = ordenMenu;
 	}
 
 	public String getFechaCreacion() {

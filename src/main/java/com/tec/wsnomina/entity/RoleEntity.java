@@ -37,8 +37,7 @@ public class RoleEntity {
 	
 	@ManyToMany(mappedBy = "roles")
 	private Set<UsuarioEntity> usuarios = new HashSet<>();
-	
-	
+
 	public Set<UsuarioEntity> getUsuarios() {
 		return usuarios;
 	}

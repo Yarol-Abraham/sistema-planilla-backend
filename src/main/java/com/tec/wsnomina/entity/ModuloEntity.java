@@ -1,10 +1,13 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,6 +36,17 @@ public class ModuloEntity {
    
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
+
+	@OneToMany(mappedBy = "modulo")
+	private List<MenuEntity> menu;
+	
+	public List<MenuEntity> getMenu() {
+		return menu;
+	}
+
+	public void setMenu(List<MenuEntity> menu) {
+		this.menu = menu;
+	}
 
 	public int getIdModulo() {
 		return idModulo;

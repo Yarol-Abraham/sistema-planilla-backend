@@ -1,11 +1,15 @@
 package com.tec.wsnomina.entity;
 
+import com.tec.wsnomina.entity.key.UsuarioRoleKey;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 
 @Entity
+@IdClass(UsuarioRoleKey.class)
 @Table(name = "usuario_role")
 public class UsuarioRoleEntity {
 
@@ -13,6 +17,7 @@ public class UsuarioRoleEntity {
 	@Column(name = "IdUsuario")
 	private String idUsuario = "";
 	
+	@Id
 	@Column(name = "IdRole")
 	private String idRole = "";
 	
