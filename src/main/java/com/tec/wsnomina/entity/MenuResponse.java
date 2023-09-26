@@ -8,7 +8,6 @@ public class MenuResponse {
 
 	private String strResponseCode = "";
 	private String strResponseMessage = "";
-	//private List<MenuEntity> entMenu;
 	private List<ModuloDto> entModulo;
 	
 	
@@ -31,7 +30,5 @@ public class MenuResponse {
 	public void setStrResponseMessage(String strResponseMessage) {
 		this.strResponseMessage = strResponseMessage;
 	}
-	
-	// TODO: DEBE DE RETORNAR EL MENU CON SUS MODULOS, MENU, OPCIONES Y FILTRADO
 	
 }

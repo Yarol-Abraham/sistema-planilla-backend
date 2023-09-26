@@ -13,7 +13,7 @@ public class SessionInformationResponse {
 	private String strNombre = "";
 	private String strFotografia = "";
 	private int intRoleSelect = 0;
-	private List<RoleDto> listRoles;
+	private List<RoleDto> listRoles = null;
 	
 	public  List<RoleDto> getListRoles() {
 		return listRoles;

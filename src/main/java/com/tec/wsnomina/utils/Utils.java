@@ -1,6 +1,9 @@
 package com.tec.wsnomina.utils;
 
 import java.net.InetAddress;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Random;
 
 public class Utils {
 	
@@ -71,4 +74,72 @@ public class Utils {
 
         return fecha;
     }
+    
+    public int validNumber(String strnumber)
+	{
+		int format = -1;
+		try
+		{
+			format = Integer.parseInt(strnumber);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("ERROR AL CONVERTIR NUMERO: validNumber(): " + ex.getMessage());
+			format = -1;
+		}
+		
+		return format;
+	}
+    
+    public String generatePassword(int length, int minNumber, int minLowercase, int minUppercase, int minCharacterEspecial)
+    {
+    	if (length < minLowercase + minUppercase + minNumber + minCharacterEspecial) 
+    	{
+            throw new IllegalArgumentException("La longitud de la contraseña es insuficiente para cumplir con los requisitos.");
+        }
+    	
+    	 String lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+         String uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+         String digitChars = "0123456789";
+         String specialChars = "!@#$%^&*()_+[]{}|;':,.<>?";
+         
+         StringBuilder password = new StringBuilder();
+         Random random = new Random();
+         
+         for(int i = 0; i < minNumber; i++)
+         {
+        	 password.append(digitChars.charAt(random.nextInt(digitChars.length())));
+         }
+         
+         for(int i = 0; i < minLowercase; i++)
+         {
+        	 password.append(lowercaseChars.charAt(random.nextInt(lowercaseChars.length())));
+         }
+         
+         for(int i = 0; i < minUppercase; i++)
+         {
+        	 password.append(uppercaseChars.charAt(random.nextInt(uppercaseChars.length())));
+         }
+         
+         for(int i = 0; i < minCharacterEspecial; i++)
+         {
+        	 password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+         }
+         
+         String allowedChars = lowercaseChars + uppercaseChars + digitChars + specialChars;
+         for (int i = minLowercase + minUppercase + minNumber + minCharacterEspecial; i < length; i++) {
+             password.append(allowedChars.charAt(random.nextInt(allowedChars.length())));
+         }
+         
+         char[] passwordArray = password.toString().toCharArray();
+         for (int i = passwordArray.length - 1; i > 0; i--) {
+             int index = random.nextInt(i + 1);
+             char temp = passwordArray[index];
+             passwordArray[index] = passwordArray[i];
+             passwordArray[i] = temp;
+         }
+         
+         return new String(passwordArray);
+    }
+    
 }

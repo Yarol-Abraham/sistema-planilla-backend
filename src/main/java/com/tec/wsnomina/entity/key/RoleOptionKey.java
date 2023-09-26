@@ -2,7 +2,10 @@ package com.tec.wsnomina.entity.key;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Embeddable;
 
+
+@Embeddable
 public class RoleOptionKey implements Serializable {
 	
 	private int idRole;

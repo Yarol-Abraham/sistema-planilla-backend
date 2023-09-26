@@ -3,23 +3,22 @@ package com.tec.wsnomina.entity;
 import com.tec.wsnomina.entity.key.RoleOptionKey;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@IdClass(RoleOptionKey.class)
 @Table(name = "role_opcion")
 public class RoleOptionEntity {
 
-	@Id
-	@Column(name = "IdRole")
-	private int idRole;
+	@EmbeddedId
+	private RoleOptionKey id;
 	
-	@Id
-	@Column(name = "IdOpcion")
-	private int idOpcion;
+	@ManyToOne
+	@JoinColumn(name = "IdOpcion", referencedColumnName = "IdOpcion", insertable = false, updatable = false)
+	private OptionEntity opcion;
 	
 	@Column(name = "Alta")
 	private int alta;
@@ -48,20 +47,20 @@ public class RoleOptionEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
 
-	public int getIdRole() {
-		return idRole;
+	public RoleOptionKey getId() {
+		return id;
 	}
 
-	public void setIdRole(int idRole) {
-		this.idRole = idRole;
+	public void setId(RoleOptionKey id) {
+		this.id = id;
 	}
 
-	public int getIdOpcion() {
-		return idOpcion;
+	public OptionEntity getOpcion() {
+		return opcion;
 	}
 
-	public void setIdOpcion(int idOpcion) {
-		this.idOpcion = idOpcion;
+	public void setOpcion(OptionEntity opcion) {
+		this.opcion = opcion;
 	}
 
 	public int getAlta() {

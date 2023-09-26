@@ -31,7 +31,7 @@ public class WebSecurityConfig {
 	SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception
 	{
 		return http
-				.csrf().disable()
+				.csrf().disable().cors().and()
 		        .authorizeHttpRequests( 
 		        		(requests) ->
 		        			requests.requestMatchers(new AntPathRequestMatcher("/auth/login")).permitAll()

@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,8 +24,9 @@ public class SucursalEntity {
 	@Column(name = "Direccion")
 	private String direccion = "";
 	
-	@Column(name = "IdEmpresa")
-	private int idEmpresa;
+	@ManyToOne
+	@JoinColumn(name = "IdEmpresa", referencedColumnName = "IdEmpresa")
+	private EmpresaEntity empresa;
 	
 	@Column(name = "FechaCreacion")
 	private String fechaCreacion = "";
@@ -36,6 +39,14 @@ public class SucursalEntity {
    
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
+
+	public EmpresaEntity getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(EmpresaEntity empresa) {
+		this.empresa = empresa;
+	}
 
 	public int getIdSucursal() {
 		return idSucursal;
@@ -60,7 +71,7 @@ public class SucursalEntity {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
-
+/*
 	public int getIdEmpresa() {
 		return idEmpresa;
 	}
@@ -68,7 +79,7 @@ public class SucursalEntity {
 	public void setIdEmpresa(int idEmpresa) {
 		this.idEmpresa = idEmpresa;
 	}
-
+*/
 	public String getFechaCreacion() {
 		return fechaCreacion;
 	}

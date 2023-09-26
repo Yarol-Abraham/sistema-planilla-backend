@@ -11,9 +11,7 @@ import com.tec.wsnomina.dto.RoleDto;
 import com.tec.wsnomina.entity.EmpresaEntity;
 import com.tec.wsnomina.entity.SessionCredentials;
 import com.tec.wsnomina.entity.SessionInformationResponse;
-import com.tec.wsnomina.entity.SucursalEntity;
 import com.tec.wsnomina.entity.UsuarioEntity;
-import com.tec.wsnomina.repository.IEmpresaRepository;
 import com.tec.wsnomina.repository.ISucursalRepository;
 import com.tec.wsnomina.repository.IUsuarioRepository;
 import com.tec.wsnomina.security.GenerateToken;
@@ -30,12 +28,8 @@ public class SessionServiceImpl implements SessionService {
 	@Autowired
 	private ISucursalRepository iSucursalRepository;
 	
-	@Autowired
-	private IEmpresaRepository iEmpresaRepository;
-	
 	private UsuarioEntity usuarioEntity = new UsuarioEntity();
 	
-	private SessionInformationResponse sessionInformationResponse = new SessionInformationResponse();
 	private Utils utils = new Utils();
 	private Methods methods = new Methods();
 	private PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
@@ -44,6 +38,8 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public SessionInformationResponse generateSessionByUser(SessionCredentials sessionCredentials)
 	{
+		SessionInformationResponse sessionInformationResponse = new SessionInformationResponse();
+		
 		try
 		{
 			sessionCredentials = cleanValuesCredential(sessionCredentials);
@@ -98,7 +94,7 @@ public class SessionServiceImpl implements SessionService {
 				String generateToken = GenerateToken.createToken(sessionCredentials.getCorreoElectronico());
 				sessionInformationResponse.setListRoles(roles);
 				sessionInformationResponse.setStrSessionId(generateToken);
-				sessionInformationResponse.setStrNombre(searchUser.get().getNombre());
+				sessionInformationResponse.setStrNombre(searchUser.get().getNombre() + " " + searchUser.get().getApellido());
 				sessionInformationResponse.setStrIdUsuario(searchUser.get().getIdUsuario());
 				sessionInformationResponse.setStrFotografia(searchUser.get().getFotografia());
 				
@@ -116,6 +112,7 @@ public class SessionServiceImpl implements SessionService {
 
 			systemFailCount(searchUser.get());
 			sessionInformationResponse.setStrResponseMessage("CREDENCIALES INVÁLIDAS, verifica que tu contraseña o correo sean correctos");
+			sessionInformationResponse.setListRoles(null);
 			return sessionInformationResponse;
 		
 			
@@ -133,6 +130,7 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public SessionInformationResponse getByInformationUserSesion(String sessionId) 
 	{
+		SessionInformationResponse sessionInformationResponse = new SessionInformationResponse();
 		try
 		{
 			if(sessionId.isEmpty())
@@ -157,7 +155,7 @@ public class SessionServiceImpl implements SessionService {
 			{
 				sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
 				sessionInformationResponse.setStrResponseMessage("TIEMPO AGOTADO, LA SESIÓN HA EXPIRADO");
-				resetValuesSessionInformationResponse();
+				resetValuesSessionInformationResponse(sessionInformationResponse);
 				return sessionInformationResponse;
 			}
 			
@@ -165,7 +163,7 @@ public class SessionServiceImpl implements SessionService {
 			{
 				sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
 				sessionInformationResponse.setStrResponseMessage("ERROR AL OBTENER DATOS DE LA SESIÓN (FAIL)");
-				resetValuesSessionInformationResponse();
+				resetValuesSessionInformationResponse(sessionInformationResponse);
 				return sessionInformationResponse;
 			}
 			
@@ -192,11 +190,12 @@ public class SessionServiceImpl implements SessionService {
 			System.out.println("ERROR EN: SessionServiceImpl.getByInformationUserSesion()" + ex.getMessage());
 			sessionInformationResponse.setStrResponseCode(this.methods.GETERROR());
 			sessionInformationResponse.setStrResponseMessage("ERROR AL OBTENER DATOS DE LA SESIÓN (FAIL)");
-			resetValuesSessionInformationResponse();
+			resetValuesSessionInformationResponse(sessionInformationResponse);
 		}
 		return sessionInformationResponse;
 	}
-		
+	
+	
 	private SessionCredentials cleanValuesCredential(SessionCredentials sessionCredentials)
 	{
 		SessionCredentials sessionCredentialsClean = new SessionCredentials();
@@ -210,17 +209,12 @@ public class SessionServiceImpl implements SessionService {
 	{
 		try
 		{
-			Optional<SucursalEntity> sucursal = this.iSucursalRepository.findById(usuarioEntity.getIdSucursal());
+			EmpresaEntity empresa = this.iSucursalRepository.findById(usuarioEntity.getIdSucursal()).get().getEmpresa();
 			
-			if(sucursal.isEmpty())
+			if(empresa == null)
 				return;
 			
-			Optional<EmpresaEntity> empresa = this.iEmpresaRepository.findByIdEmpresa(sucursal.get().getIdEmpresa());
-			
-			if(empresa.isEmpty())
-				return;
-			
-			if(empresa.get().getPasswordIntentosAntesDeBloquear() <= usuarioEntity.getIntentosDeAcceso())
+			if(empresa.getPasswordIntentosAntesDeBloquear() <= usuarioEntity.getIntentosDeAcceso())
 			{
 				 usuarioEntity.setIdStatusUsuario(this.methods.GETSTATUS_LOCKED());
 				 this.iUsuarioRepository.save(usuarioEntity);
@@ -237,11 +231,12 @@ public class SessionServiceImpl implements SessionService {
 		}
 	}
 	
-	private void resetValuesSessionInformationResponse()
+	private void resetValuesSessionInformationResponse(SessionInformationResponse sessionInformationResponse)
 	{
 		sessionInformationResponse.setStrFotografia("");
 		sessionInformationResponse.setStrIdUsuario("");
 		sessionInformationResponse.setStrNombre("");
+		sessionInformationResponse.setListRoles(null);
 	}
 	
 }

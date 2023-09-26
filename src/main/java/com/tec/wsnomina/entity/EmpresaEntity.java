@@ -1,10 +1,13 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -61,6 +64,10 @@ public class EmpresaEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
    
+	@OneToMany(mappedBy = "empresa")
+	private List<SucursalEntity> sucursales;
+	
+	
 	public int getIdEmpresa() {
 		return idEmpresa;
 	}

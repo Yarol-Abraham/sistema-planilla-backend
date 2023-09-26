@@ -1,13 +1,23 @@
 package com.tec.wsnomina.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tec.wsnomina.dto.UsuarioCreateDto;
+import com.tec.wsnomina.dto.UsuarioDto;
+import com.tec.wsnomina.entity.EmpresaEntity;
+import com.tec.wsnomina.entity.ListUsuarioResponse;
+import com.tec.wsnomina.entity.SessionChangePassword;
 import com.tec.wsnomina.entity.SessionInformationResponse;
+import com.tec.wsnomina.entity.SucursalEntity;
 import com.tec.wsnomina.entity.UsuarioEntity;
 import com.tec.wsnomina.entity.UsuarioResponse;
+import com.tec.wsnomina.repository.IEmpresaRepository;
+import com.tec.wsnomina.repository.ISucursalRepository;
 import com.tec.wsnomina.repository.IUsuarioRepository;
 import com.tec.wsnomina.security.PasswordEncrypt;
 import com.tec.wsnomina.utils.Methods;
@@ -20,14 +30,19 @@ public class UsuarioServiceImpl implements UsuarioService {
 	// repository
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
+
+	// empresa
+	@Autowired
+	private IEmpresaRepository iempresaRepository;
+	
+	// sucursal
+	@Autowired
+	private ISucursalRepository iSucursalRepository;
 	
 	// services
 	@Autowired
 	private SessionServiceImpl sessionServiceImpl;
-	
-	// entity
-	private UsuarioResponse usuarioResponse = new UsuarioResponse();
-	
+			
 	// utilities
 	private Utils utils = new Utils();
 	private Methods methods = new Methods();
@@ -38,8 +53,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	private int ACTIVO = 1;
 	
 	@Override
-	public UsuarioResponse createUser(UsuarioEntity usuarioEntity, String sessionId) 
+	public UsuarioResponse createUser(UsuarioCreateDto usuarioCreateDto, String sessionId) 
 	{
+		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		
 		try
 		{
 			// VALIDAMOS PRIMERO LA SESION
@@ -51,12 +68,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 				return usuarioResponse;
 			}
 						
-			usuarioEntity =  cleanValues(usuarioEntity, "CREATE");
+			usuarioCreateDto = cleanValues(usuarioCreateDto, usuarioResponse, "CREATE");
 			
 			if(usuarioResponse.getStrResponseCode().equals(methods.GETERROR()))
 				return usuarioResponse;
 			
-			Optional<UsuarioEntity> usuarioSearch = this.iUsuarioRepository.findByCorreoElectronico(usuarioEntity.getCorreoElectronico());
+			Optional<UsuarioEntity> usuarioSearch = this.iUsuarioRepository.findByCorreoElectronico(usuarioCreateDto.getCorreoElectronico());
 			
 			if(!usuarioSearch.isEmpty())
 			{
@@ -65,16 +82,37 @@ public class UsuarioServiceImpl implements UsuarioService {
 				return usuarioResponse;
 			}
 			
-			usuarioEntity.setIdUsuario(usuarioEntity.getNombre());
-			usuarioEntity.setFechaCreacion(utils.getFechaHoraFormateada());
-			usuarioEntity.setPassword(passwordEncrypt.generateEncrypt(usuarioEntity.getPassword()));
-			usuarioEntity.setUsuarioCreacion(sessionInformationResponse.getStrNombre());
-			usuarioEntity = this.iUsuarioRepository.save(usuarioEntity);
-			usuarioEntity.setPassword("");
+			UsuarioEntity usuarioEntity = new UsuarioEntity();
+			usuarioEntity.setIdUsuario(usuarioCreateDto.getIdUsuario());
+			usuarioEntity.setNombre(usuarioCreateDto.getNombre());
+			usuarioEntity.setApellido(usuarioCreateDto.getApellido());
+			usuarioEntity.setFechaNacimiento(usuarioCreateDto.getFechaNacimiento());
+			usuarioEntity.setIdGenero(usuarioCreateDto.getIdGenero());
+			usuarioEntity.setIdStatusUsuario(ACTIVO);
+			usuarioEntity.setIdSucursal(usuarioCreateDto.getIdSucursal());
+			usuarioEntity.setCorreoElectronico(usuarioCreateDto.getCorreoElectronico());
+			usuarioEntity.setTelefonoMovil(usuarioCreateDto.getTelefonoMovil());
 			
-			usuarioResponse.setEntUsuario(usuarioEntity);
+			String capPassword = generatePassword(usuarioCreateDto.getIdSucursal());
+			usuarioEntity.setPassword(passwordEncrypt.generateEncrypt(capPassword));
+			
+			usuarioEntity.setFechaCreacion(utils.getFechaHoraFormateada());
+			usuarioEntity.setUsuarioCreacion(sessionInformationResponse.getStrNombre());
+			usuarioEntity.setRequiereCambiarPassword(usuarioCreateDto.getRequiereCambiarPassword());
+			
+			usuarioEntity = this.iUsuarioRepository.save(usuarioEntity);
+			
+			UsuarioDto usuarioDto = new UsuarioDto(
+					usuarioEntity.getNombre(), 
+					usuarioEntity.getApellido(), 
+					usuarioEntity.getCorreoElectronico(), 
+					usuarioEntity.getTelefonoMovil(), 
+					usuarioEntity.getFechaNacimiento(), 
+					usuarioEntity.getIdGenero());
+			
+			usuarioResponse.setEntUsuario(usuarioDto);
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
-			usuarioResponse.setStrResponseMessage("USUARIO CREADO");
+			usuarioResponse.setStrResponseMessage("USUARIO CREADO, PASSWORD: " + capPassword );
 		}
 		catch(Exception ex)
 		{
@@ -86,8 +124,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 	}
 
 	@Override
-	public UsuarioResponse updateUser(UsuarioEntity usuarioEntity, String sessionId) 
+	public UsuarioResponse updateUser(UsuarioCreateDto usuarioEntity, String sessionId) 
 	{
+		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		
 		try
 		{
 			// VALIDAMOS PRIMERO LA SESION
@@ -99,14 +139,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 				return usuarioResponse;
 			}
 			
-			System.out.println("USUARIO: " + usuarioEntity);
-			
-			
-			usuarioEntity = cleanValues(usuarioEntity, "UPDATE");
-			
-
-			System.out.println("USUARIO: " + usuarioEntity);
-			
+			usuarioEntity = cleanValues(usuarioEntity, usuarioResponse, "UPDATE");
 			
 			if(usuarioResponse.getStrResponseCode().equals(methods.GETERROR()))
 				return usuarioResponse;
@@ -126,7 +159,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuario.get().setFechaNacimiento(usuarioEntity.getFechaNacimiento());
 			usuario.get().setTelefonoMovil(usuarioEntity.getTelefonoMovil());
 			usuario.get().setCorreoElectronico(usuarioEntity.getCorreoElectronico());
-		
+			usuario.get().setIdGenero(usuarioEntity.getIdGenero());
+			
 			if(usuarioEntity.getFotografia() != null)
 				usuario.get().setFotografia(usuarioEntity.getFotografia());
 			
@@ -137,6 +171,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
 			usuarioResponse.setStrResponseMessage("USUARIO ACTUALIZADO");
+			UsuarioDto usuarioDto = new UsuarioDto(
+					usuarioEntity.getNombre(), 
+					usuarioEntity.getApellido(), 
+					usuarioEntity.getCorreoElectronico(), 
+					usuarioEntity.getTelefonoMovil(),
+					usuarioEntity.getFechaNacimiento(),
+					usuarioEntity.getIdGenero()
+					);
+			usuarioResponse.setEntUsuario(usuarioDto);
 		}
 		catch(Exception ex)
 		{
@@ -150,6 +193,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 	
 	public UsuarioResponse deleteUser(String IdUsuario, String sessionId)
 	{
+
+		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		
 		try
 		{
 			// VALIDAMOS PRIMERO LA SESION
@@ -187,12 +233,157 @@ public class UsuarioServiceImpl implements UsuarioService {
 		}
 		return usuarioResponse;
 	}
+
+	public UsuarioResponse getUser(String sessionId)
+	{
+
+		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		
+		UsuarioDto usuario = new UsuarioDto();
+		try
+		{
+			SessionInformationResponse sessionInformation = this.sessionServiceImpl.getByInformationUserSesion(sessionId);
+			Optional<UsuarioEntity> usuarioOptional = this.iUsuarioRepository.findById(sessionInformation.getStrIdUsuario());
+			
+			if(usuarioOptional.isEmpty())
+			{
+				usuarioResponse.setStrResponseCode(this.methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("Usuario no existe");
+				return usuarioResponse;
+			}
+			
+			usuario.setNombre(usuarioOptional.get().getNombre());
+			usuario.setApellido(usuarioOptional.get().getApellido());
+			usuario.setCorreoElectronico(usuarioOptional.get().getCorreoElectronico());
+			usuario.setTelefonoMovil(usuarioOptional.get().getTelefonoMovil());
+			usuario.setIdGenero(usuarioOptional.get().getIdGenero());
+			usuario.setFechaNacimiento(usuarioOptional.get().getFechaNacimiento());
+			
+			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
+			usuarioResponse.setStrResponseMessage("SUCCESS");
+			usuarioResponse.setEntUsuario(usuario);
+			return usuarioResponse;
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Error: " + ex.getMessage());
+			usuarioResponse.setStrResponseCode(methods.GETERROR());
+			usuarioResponse.setStrResponseMessage("ERROR AL INTENTAR CON EL USUARIO");
+			return usuarioResponse;
+		
+		}
+	}
+	
+	public ListUsuarioResponse getUsers(String sessionId)
+	{
+		ListUsuarioResponse listUsuarioResponse = new ListUsuarioResponse();
+		try
+		{
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				listUsuarioResponse.setStrResponseCode(methods.GETERROR());
+				listUsuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return listUsuarioResponse;
+			}
+						
+			List<UsuarioEntity> users = this.iUsuarioRepository.findAll();
+			List<UsuarioCreateDto> userdto = new ArrayList<UsuarioCreateDto>();
+			
+			for(UsuarioEntity user : users)
+			{
+				userdto.add( new UsuarioCreateDto(user.getNombre(), 
+						user.getApellido(), 
+						user.getCorreoElectronico(), 
+						user.getTelefonoMovil(), 
+						user.getFechaNacimiento(), 
+						user.getIdGenero(),
+					    user.getIdUsuario(),
+					    user.getIdSucursal(),
+					    user.getRequiereCambiarPassword(),
+					    user.getFotografia()
+				));
+			}
+			listUsuarioResponse.setStrResponseCode(methods.GETSUCCESS());
+			listUsuarioResponse.setStrResponseMessage("SUCCESS");
+			listUsuarioResponse.setUsuarios(userdto);
+		}
+		catch(Exception ex)
+		{
+			System.out.println("ERROR EN: UsuarioServiceLmpl.ListUsuarioResponse() " + ex.getMessage());
+			listUsuarioResponse.setStrResponseCode(methods.GETERROR());
+			listUsuarioResponse.setStrResponseMessage("ERROR LA OBTENER LA LISTA DE USUARIOS");
+		}
+		return listUsuarioResponse;
+	}
+	
+	public UsuarioResponse updatePassword(String sessionId, SessionChangePassword sessionCredentials)
+	{
+		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		try
+		{
+			
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return usuarioResponse;
+			}
+			Optional<UsuarioEntity> userOptional = this.iUsuarioRepository.findById(sessionCredentials.getCorreoElectronico());		
+						
+			Optional<EmpresaEntity> empresaOptional = this.iempresaRepository.findById(userOptional.get().getIdSucursal());
+			
+
+			if(this.passwordEncrypt.CompareToPasswords(userOptional.get().getPassword(), sessionCredentials.getPassword()))
+			{
+				// TODO: AGREGAR LAS VALIDACIONES DE LA EMPRESA
+				int cantM = empresaOptional.get().getPasswordCantidadMayusculas();
+				int countM = 0;
+				
+				for(int i = 0; i < sessionCredentials.getNewPassword().length(); i++ )
+				{
+					char caracter =  sessionCredentials.getNewPassword().charAt(i);
+					if(Character.isUpperCase(caracter))
+					{
+						countM++;
+					}
+				}
+				
+				
+				
+				
+			}
+			
+		}
+		catch(Exception ex)
+		{
+			
+		}
+		return usuarioResponse;
+	}
+	
+	public String generatePassword(int idSucursal)
+	{
+		Optional<SucursalEntity> sucursal = this.iSucursalRepository.findById(idSucursal);
+		EmpresaEntity empresa = sucursal.get().getEmpresa();
+		
+		int length = empresa.getPasswordLargo();
+		int minNumber = empresa.getPasswordCantidadNumeros();
+		int minLowercase = empresa.getPasswordCantidadMinusculas();
+		int minUppercase = empresa.getPasswordCantidadMayusculas();
+		int minCharacterEspecial = empresa.getPasswordCantidadCaracteresEspeciales();
+		
+		return this.utils.generatePassword(length, minNumber, minLowercase, minUppercase, minCharacterEspecial);
+		
+	}
 	
 	// CLEAN VALUES
-	private UsuarioEntity cleanValues(UsuarioEntity usuarioEntity, String OPERATION)
+	private UsuarioCreateDto cleanValues(UsuarioCreateDto usuarioEntity, UsuarioResponse usuarioResponse, String OPERATION)
 	{
-		UsuarioEntity usuarioEntityClean = new UsuarioEntity();
-		usuarioEntityClean.setPassword("");
+		UsuarioCreateDto usuarioEntityClean = new UsuarioCreateDto();
 		
 		usuarioEntityClean.setIdUsuario(utils.clean(usuarioEntity.getIdUsuario()));
 		usuarioEntityClean.setNombre(utils.clean(usuarioEntity.getNombre()));
@@ -217,23 +408,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 			return usuarioEntityClean;
 		}
 		
-		
-		usuarioEntityClean.setPassword(utils.clean(usuarioEntity.getPassword()));
-		
-		
 		usuarioEntityClean.setCorreoElectronico(utils.clean(usuarioEntity.getCorreoElectronico()));
 		
-		if(OPERATION.equals("CREATE"))
-		{
-			usuarioEntityClean.setIdUsuario("");
-			usuarioEntityClean.setIdStatusUsuario(ACTIVO);
-			usuarioEntityClean.setFechaCreacion("");
-			usuarioEntityClean.setUltimaFechaCambioPassword(null);
-			usuarioEntityClean.setUsuarioModificacion(null);
-			usuarioEntityClean.setFechaModificacion(null);
-			usuarioEntityClean.setUltimaFechaIngreso(null);
-			usuarioEntityClean.setIntentosDeAcceso(0);
-		}
 		// validate required password
 		if(usuarioEntity.getRequiereCambiarPassword() == 0 || usuarioEntity.getRequiereCambiarPassword() == 1 )
 		{
@@ -247,9 +423,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		if(usuarioEntity.getFotografia() != null)
 			usuarioEntityClean.setFotografia(utils.clean(usuarioEntity.getFotografia()));
-		
-		if(usuarioEntity.getSesionActual() != null)
-			usuarioEntityClean.setSesionActual(utils.clean(usuarioEntity.getSesionActual()));
 		
 		return usuarioEntityClean;
 	}

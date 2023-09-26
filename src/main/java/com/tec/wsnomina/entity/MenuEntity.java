@@ -62,15 +62,6 @@ public class MenuEntity {
 	public void setIdMenu(int idMenu) {
 		this.idMenu = idMenu;
 	}
-/*
-	public int getIdModulo() {
-		return idModulo;
-	}
-
-	public void setIdModulo(int idModulo) {
-		this.idModulo = idModulo;
-	}
-	*/
 
 	public List<OptionEntity> getOpciones() {
 		return opciones;

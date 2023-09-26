@@ -10,28 +10,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tec.wsnomina.entity.UsuarioEntity;
+import com.tec.wsnomina.dto.UsuarioCreateDto;
+import com.tec.wsnomina.entity.ListUsuarioResponse;
+import com.tec.wsnomina.entity.SessionInformationResponse;
 import com.tec.wsnomina.entity.UsuarioResponse;
+import com.tec.wsnomina.services.SessionServiceImpl;
 import com.tec.wsnomina.services.UsuarioServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin("http://localhost:5173")
 @RequestMapping("/tec/user")
 public class UsuarioController {
 
 	@Autowired
 	private UsuarioServiceImpl usuarioServiceImpl;
 	
+	@Autowired 
+	private SessionServiceImpl sessionServiceImpl;
+	
 	@PostMapping("/create")
-	public UsuarioResponse create(@RequestBody UsuarioEntity usuarioEntity, HttpServletRequest request)
+	public UsuarioResponse create(@RequestBody UsuarioCreateDto usuarioEntity, HttpServletRequest request)
 	{
 		return this.usuarioServiceImpl.createUser(usuarioEntity, request.getHeader("Authorization"));
 	}
 	
 	@PostMapping("/update")
-	public UsuarioResponse update(@RequestBody UsuarioEntity usuarioEntity, HttpServletRequest request)
+	public UsuarioResponse update(@RequestBody UsuarioCreateDto usuarioEntity, HttpServletRequest request)
 	{
 		return this.usuarioServiceImpl.updateUser(usuarioEntity, request.getHeader("Authorization"));
 	}
@@ -42,12 +48,22 @@ public class UsuarioController {
 		return this.usuarioServiceImpl.deleteUser(IdUsuario, request.getHeader("Authorization"));
 	}
 	
-	@GetMapping("/plantilla")
-	public UsuarioEntity plantilla(HttpServletRequest request)
+	@GetMapping("/information")
+	public SessionInformationResponse information(HttpServletRequest request)
 	{
-		String token = request.getHeader("Authorization");
-		System.out.println(token);
-		return new UsuarioEntity();
+		return this.sessionServiceImpl.getByInformationUserSesion(request.getHeader("Authorization"));
+	}
+	
+	@GetMapping("/perfil")
+	public UsuarioResponse getuser(HttpServletRequest request)
+	{
+		return this.usuarioServiceImpl.getUser(request.getHeader("Authorization"));
+	}
+	
+	@GetMapping("/list")
+	public ListUsuarioResponse getusers(HttpServletRequest request)
+	{
+		return this.usuarioServiceImpl.getUsers(request.getHeader("Authorization"));
 	}
 	
 }

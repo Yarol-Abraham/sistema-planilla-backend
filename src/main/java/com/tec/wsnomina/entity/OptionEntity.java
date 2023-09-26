@@ -1,5 +1,7 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -42,6 +45,18 @@ public class OptionEntity {
    
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
+
+	
+	@OneToMany(mappedBy =  "opcion")
+	private List<RoleOptionEntity> roleopciones;
+	
+	public List<RoleOptionEntity> getRoleopciones() {
+		return roleopciones;
+	}
+
+	public void setRoleopciones(List<RoleOptionEntity> roleopciones) {
+		this.roleopciones = roleopciones;
+	}
 
 	public int getIdOpcion() {
 		return idOpcion;

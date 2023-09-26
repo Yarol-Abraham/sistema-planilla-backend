@@ -1,12 +1,15 @@
 package com.tec.wsnomina.entity;
 
-import com.tec.wsnomina.dto.UsuarioDto;
+import java.util.ArrayList;
+import java.util.List;
 
-public class UsuarioResponse {
+import com.tec.wsnomina.dto.UsuarioCreateDto;
+
+public class ListUsuarioResponse {
 
 	private String strResponseCode = "";
 	private String strResponseMessage = "";
-	private UsuarioDto entUsuario = new UsuarioDto();
+	private List<UsuarioCreateDto> usuarios = new ArrayList<UsuarioCreateDto>();
 	
 	public String getStrResponseCode() {
 		return strResponseCode;
@@ -20,11 +23,12 @@ public class UsuarioResponse {
 	public void setStrResponseMessage(String strResponseMessage) {
 		this.strResponseMessage = strResponseMessage;
 	}
-	public UsuarioDto getEntUsuario() {
-		return entUsuario;
+	public List<UsuarioCreateDto> getUsuarios() {
+		return usuarios;
 	}
-	public void setEntUsuario(UsuarioDto entUsuario) {
-		this.entUsuario = entUsuario;
+	public void setUsuarios(List<UsuarioCreateDto> usuarios) {
+		this.usuarios = usuarios;
 	}
+	
 	
 }

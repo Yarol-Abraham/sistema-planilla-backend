@@ -4,6 +4,6 @@ import com.tec.wsnomina.entity.MenuResponse;
 
 public interface MenuService {
 
-	public MenuResponse getMenu();
+	public MenuResponse getMenu(String idRole);
 	
 }
