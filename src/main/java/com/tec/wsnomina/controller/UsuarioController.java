@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tec.wsnomina.dto.UsuarioCreateDto;
+import com.tec.wsnomina.dto.UsuarioSucursalDto;
+import com.tec.wsnomina.entity.InformationResponse;
 import com.tec.wsnomina.entity.ListUsuarioResponse;
 import com.tec.wsnomina.entity.SessionInformationResponse;
 import com.tec.wsnomina.entity.UsuarioResponse;
@@ -33,6 +35,7 @@ public class UsuarioController {
 	@PostMapping("/create")
 	public UsuarioResponse create(@RequestBody UsuarioCreateDto usuarioEntity, HttpServletRequest request)
 	{
+		System.out.println("body: " + usuarioEntity);
 		return this.usuarioServiceImpl.createUser(usuarioEntity, request.getHeader("Authorization"));
 	}
 	
@@ -55,7 +58,7 @@ public class UsuarioController {
 	}
 	
 	@GetMapping("/perfil")
-	public UsuarioResponse getuser(HttpServletRequest request)
+	public InformationResponse getuser(HttpServletRequest request)
 	{
 		return this.usuarioServiceImpl.getUser(request.getHeader("Authorization"));
 	}
@@ -65,5 +68,13 @@ public class UsuarioController {
 	{
 		return this.usuarioServiceImpl.getUsers(request.getHeader("Authorization"));
 	}
+	
+	@GetMapping("/plantilla")
+	public UsuarioSucursalDto getplantilla(HttpServletRequest request)
+	{
+		return new UsuarioSucursalDto();
+	}
+	
+	
 	
 }

@@ -1,12 +1,13 @@
 package com.tec.wsnomina.entity;
 
 import com.tec.wsnomina.dto.UsuarioDto;
+import com.tec.wsnomina.dto.UsuarioSucursalDto;
 
 public class UsuarioResponse {
 
 	private String strResponseCode = "";
 	private String strResponseMessage = "";
-	private UsuarioDto entUsuario = new UsuarioDto();
+	private UsuarioSucursalDto entUsuario = new UsuarioSucursalDto();
 	
 	public String getStrResponseCode() {
 		return strResponseCode;
@@ -23,7 +24,7 @@ public class UsuarioResponse {
 	public UsuarioDto getEntUsuario() {
 		return entUsuario;
 	}
-	public void setEntUsuario(UsuarioDto entUsuario) {
+	public void setEntUsuario(UsuarioSucursalDto entUsuario) {
 		this.entUsuario = entUsuario;
 	}
 	

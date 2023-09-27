@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -63,9 +64,13 @@ public class UsuarioEntity {
    
    @Column(name = "TelefonoMovil")
    private String telefonoMovil = "";
-   
+   /*
    @Column(name = "IdSucursal")
    private int idSucursal = 0;
+  */ 
+   @OneToOne
+   @JoinColumn(name = "IdSucursal", referencedColumnName =  "IdSucursal")
+   private SucursalEntity sucursal;
    
    @Column(name = "FechaCreacion")
    private String fechaCreacion = "";
@@ -83,6 +88,14 @@ public class UsuarioEntity {
    @JoinTable(name = "usuario_role",joinColumns = @JoinColumn(name = "IdUsuario"), inverseJoinColumns = @JoinColumn(name = "IdRole"))
    private Set<RoleEntity> roles = new HashSet<>();
    
+	public SucursalEntity getSucursal() {
+	return sucursal;
+}
+
+public void setSucursal(SucursalEntity sucursal) {
+	this.sucursal = sucursal;
+}
+
 	public Set<RoleEntity> getRoles() {
 		return roles;
 	}
@@ -210,7 +223,7 @@ public class UsuarioEntity {
 	public void setTelefonoMovil(String telefonoMovil) {
 		this.telefonoMovil = telefonoMovil;
 	}
-	
+	/*
 	public int getIdSucursal() {
 		return idSucursal;
 	}
@@ -218,7 +231,7 @@ public class UsuarioEntity {
 	public void setIdSucursal(int idSucursal) {
 		this.idSucursal = idSucursal;
 	}
-	
+	*/
 	public String getFechaCreacion() {
 		return fechaCreacion;
 	}
@@ -251,17 +264,6 @@ public class UsuarioEntity {
 		this.usuarioModificacion = usuarioModificacion;
 	}
 
-	@Override
-	public String toString() {
-		return "UsuarioEntity [idUsuario=" + idUsuario + ", nombre=" + nombre + ", apellido=" + apellido
-				+ ", fechaNacimiento=" + fechaNacimiento + ", idStatusUsuario=" + idStatusUsuario + ", password="
-				+ password + ", idGenero=" + idGenero + ", ultimaFechaIngreso=" + ultimaFechaIngreso
-				+ ", intentosDeAcceso=" + intentosDeAcceso + ", sesionActual=" + sesionActual
-				+ ", ultimaFechaCambioPassword=" + ultimaFechaCambioPassword + ", correoElectronico="
-				+ correoElectronico + ", requiereCambiarPassword=" + requiereCambiarPassword + ", fotografia="
-				+ fotografia + ", telefonoMovil=" + telefonoMovil + ", idSucursal=" + idSucursal + ", fechaCreacion="
-				+ fechaCreacion + ", usuarioCreacion=" + usuarioCreacion + ", fechaModificacion=" + fechaModificacion
-				+ ", usuarioModificacion=" + usuarioModificacion + ", roles=" + roles + "]";
-	}
+	
 	   
 }

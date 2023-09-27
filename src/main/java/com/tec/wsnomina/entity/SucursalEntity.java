@@ -1,5 +1,7 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -40,6 +43,9 @@ public class SucursalEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
 
+	@OneToMany(mappedBy = "sucursal")
+	private List<UsuarioEntity> usuarios;
+	
 	public EmpresaEntity getEmpresa() {
 		return empresa;
 	}
@@ -71,15 +77,7 @@ public class SucursalEntity {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
-/*
-	public int getIdEmpresa() {
-		return idEmpresa;
-	}
 
-	public void setIdEmpresa(int idEmpresa) {
-		this.idEmpresa = idEmpresa;
-	}
-*/
 	public String getFechaCreacion() {
 		return fechaCreacion;
 	}

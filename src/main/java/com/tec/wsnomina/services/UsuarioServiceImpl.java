@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.tec.wsnomina.dto.UsuarioCreateDto;
 import com.tec.wsnomina.dto.UsuarioDto;
+import com.tec.wsnomina.dto.UsuarioSucursalDto;
 import com.tec.wsnomina.entity.EmpresaEntity;
+import com.tec.wsnomina.entity.InformationResponse;
 import com.tec.wsnomina.entity.ListUsuarioResponse;
 import com.tec.wsnomina.entity.SessionChangePassword;
 import com.tec.wsnomina.entity.SessionInformationResponse;
@@ -89,7 +91,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuarioEntity.setFechaNacimiento(usuarioCreateDto.getFechaNacimiento());
 			usuarioEntity.setIdGenero(usuarioCreateDto.getIdGenero());
 			usuarioEntity.setIdStatusUsuario(ACTIVO);
-			usuarioEntity.setIdSucursal(usuarioCreateDto.getIdSucursal());
+			SucursalEntity sucursal = new SucursalEntity();
+			sucursal.setIdSucursal(usuarioCreateDto.getIdSucursal());
+			usuarioEntity.setSucursal(sucursal);
 			usuarioEntity.setCorreoElectronico(usuarioCreateDto.getCorreoElectronico());
 			usuarioEntity.setTelefonoMovil(usuarioCreateDto.getTelefonoMovil());
 			
@@ -97,18 +101,25 @@ public class UsuarioServiceImpl implements UsuarioService {
 			usuarioEntity.setPassword(passwordEncrypt.generateEncrypt(capPassword));
 			
 			usuarioEntity.setFechaCreacion(utils.getFechaHoraFormateada());
-			usuarioEntity.setUsuarioCreacion(sessionInformationResponse.getStrNombre());
+			usuarioEntity.setUsuarioCreacion(sessionInformationResponse.getStrIdUsuario());
 			usuarioEntity.setRequiereCambiarPassword(usuarioCreateDto.getRequiereCambiarPassword());
 			
 			usuarioEntity = this.iUsuarioRepository.save(usuarioEntity);
 			
-			UsuarioDto usuarioDto = new UsuarioDto(
+			UsuarioSucursalDto usuarioDto = new UsuarioSucursalDto(
 					usuarioEntity.getNombre(), 
 					usuarioEntity.getApellido(), 
 					usuarioEntity.getCorreoElectronico(), 
 					usuarioEntity.getTelefonoMovil(), 
 					usuarioEntity.getFechaNacimiento(), 
-					usuarioEntity.getIdGenero());
+					usuarioEntity.getIdGenero(),
+					usuarioEntity.getIdUsuario(),
+					usuarioEntity.getSucursal().getIdSucursal(),
+					usuarioEntity.getSucursal().getNombre(),
+					usuarioEntity.getRequiereCambiarPassword(),
+					usuarioEntity.getFotografia(),
+					usuarioEntity.getIdStatusUsuario()
+					);
 			
 			usuarioResponse.setEntUsuario(usuarioDto);
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
@@ -153,6 +164,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 				return usuarioResponse;
 			}
 			
+			if(usuario.get().getIdStatusUsuario() == INACTIVO)
+			{
+				usuarioResponse.setStrResponseCode(methods.GETRESOURCE_NOT_FOUND());
+				usuarioResponse.setStrResponseMessage("USUARIO DESHABILITADO");
+				return usuarioResponse;
+			}
+			
 			// list data update
 			usuario.get().setNombre(usuarioEntity.getNombre());
 			usuario.get().setApellido(usuarioEntity.getApellido());
@@ -165,20 +183,28 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usuario.get().setFotografia(usuarioEntity.getFotografia());
 			
 			usuario.get().setFechaModificacion(utils.getFechaHoraFormateada());
-			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrNombre());
+			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrIdUsuario());
 			
 			this.iUsuarioRepository.save(usuario.get());
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
 			usuarioResponse.setStrResponseMessage("USUARIO ACTUALIZADO");
-			UsuarioDto usuarioDto = new UsuarioDto(
+			
+			UsuarioSucursalDto usuarioDto = new UsuarioSucursalDto(
 					usuarioEntity.getNombre(), 
 					usuarioEntity.getApellido(), 
 					usuarioEntity.getCorreoElectronico(), 
-					usuarioEntity.getTelefonoMovil(),
-					usuarioEntity.getFechaNacimiento(),
-					usuarioEntity.getIdGenero()
+					usuarioEntity.getTelefonoMovil(), 
+					usuarioEntity.getFechaNacimiento(), 
+					usuarioEntity.getIdGenero(),
+					usuarioEntity.getIdUsuario(),
+					usuario.get().getSucursal().getIdSucursal(),
+					usuario.get().getSucursal().getNombre(),
+					usuarioEntity.getRequiereCambiarPassword(),
+					usuarioEntity.getFotografia(),
+					usuario.get().getIdStatusUsuario()
 					);
+			
 			usuarioResponse.setEntUsuario(usuarioDto);
 		}
 		catch(Exception ex)
@@ -217,13 +243,29 @@ public class UsuarioServiceImpl implements UsuarioService {
 			
 			usuario.get().setIdStatusUsuario(INACTIVO);
 			usuario.get().setFechaModificacion(utils.getFechaHoraFormateada());
-			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrNombre());
+			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrIdUsuario());
 			
-			this.iUsuarioRepository.save(usuario.get());
+			UsuarioEntity usuarioEntity = this.iUsuarioRepository.save(usuario.get());
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
 			usuarioResponse.setStrResponseMessage("USUARIO ELIMINADO CORRECTAMENTE");
 			
+			UsuarioSucursalDto usuarioDto = new UsuarioSucursalDto(
+					usuarioEntity.getNombre(), 
+					usuarioEntity.getApellido(), 
+					usuarioEntity.getCorreoElectronico(), 
+					usuarioEntity.getTelefonoMovil(), 
+					usuarioEntity.getFechaNacimiento(), 
+					usuarioEntity.getIdGenero(),
+					usuarioEntity.getIdUsuario(),
+					usuario.get().getSucursal().getIdSucursal(),
+					usuario.get().getSucursal().getNombre(),
+					usuarioEntity.getRequiereCambiarPassword(),
+					usuarioEntity.getFotografia(),
+					usuario.get().getIdStatusUsuario()
+					);
+			
+			usuarioResponse.setEntUsuario(usuarioDto);
 		}
 		catch(Exception ex)
 		{
@@ -234,10 +276,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return usuarioResponse;
 	}
 
-	public UsuarioResponse getUser(String sessionId)
+	public InformationResponse getUser(String sessionId)
 	{
 
-		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		InformationResponse usuarioResponse = new InformationResponse();
 		
 		UsuarioDto usuario = new UsuarioDto();
 		try
@@ -250,6 +292,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usuarioResponse.setStrResponseCode(this.methods.GETERROR());
 				usuarioResponse.setStrResponseMessage("Usuario no existe");
 				return usuarioResponse;
+			}
+			
+			if(usuarioOptional.get().getIdStatusUsuario() == INACTIVO)
+			{
+				usuarioResponse.setStrResponseCode(this.methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("Usuario no disponible (BAJA)");
+				return usuarioResponse;	
 			}
 			
 			usuario.setNombre(usuarioOptional.get().getNombre());
@@ -289,20 +338,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 			}
 						
 			List<UsuarioEntity> users = this.iUsuarioRepository.findAll();
-			List<UsuarioCreateDto> userdto = new ArrayList<UsuarioCreateDto>();
+			List<UsuarioSucursalDto> userdto = new ArrayList<UsuarioSucursalDto>();
 			
 			for(UsuarioEntity user : users)
 			{
-				userdto.add( new UsuarioCreateDto(user.getNombre(), 
+				userdto.add( new UsuarioSucursalDto(user.getNombre(), 
 						user.getApellido(), 
 						user.getCorreoElectronico(), 
 						user.getTelefonoMovil(), 
 						user.getFechaNacimiento(), 
 						user.getIdGenero(),
 					    user.getIdUsuario(),
-					    user.getIdSucursal(),
+					    user.getSucursal().getIdSucursal(),
+					    user.getSucursal().getNombre(),
 					    user.getRequiereCambiarPassword(),
-					    user.getFotografia()
+					    user.getFotografia(),
+					    user.getIdStatusUsuario()
 				));
 			}
 			listUsuarioResponse.setStrResponseCode(methods.GETSUCCESS());
@@ -332,31 +383,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
 				return usuarioResponse;
 			}
-			Optional<UsuarioEntity> userOptional = this.iUsuarioRepository.findById(sessionCredentials.getCorreoElectronico());		
-						
-			Optional<EmpresaEntity> empresaOptional = this.iempresaRepository.findById(userOptional.get().getIdSucursal());
-			
-
+		
+			/*
 			if(this.passwordEncrypt.CompareToPasswords(userOptional.get().getPassword(), sessionCredentials.getPassword()))
 			{
-				// TODO: AGREGAR LAS VALIDACIONES DE LA EMPRESA
-				int cantM = empresaOptional.get().getPasswordCantidadMayusculas();
-				int countM = 0;
-				
-				for(int i = 0; i < sessionCredentials.getNewPassword().length(); i++ )
-				{
-					char caracter =  sessionCredentials.getNewPassword().charAt(i);
-					if(Character.isUpperCase(caracter))
-					{
-						countM++;
-					}
-				}
-				
-				
 				
 				
 			}
-			
+			*/
 		}
 		catch(Exception ex)
 		{

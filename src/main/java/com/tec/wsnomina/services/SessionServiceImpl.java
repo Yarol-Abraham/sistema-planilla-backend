@@ -209,7 +209,7 @@ public class SessionServiceImpl implements SessionService {
 	{
 		try
 		{
-			EmpresaEntity empresa = this.iSucursalRepository.findById(usuarioEntity.getIdSucursal()).get().getEmpresa();
+			EmpresaEntity empresa = this.iSucursalRepository.findById(usuarioEntity.getSucursal().getIdSucursal()).get().getEmpresa();
 			
 			if(empresa == null)
 				return;

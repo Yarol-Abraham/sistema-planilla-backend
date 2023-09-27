@@ -5,6 +5,8 @@ public class RoleDto {
 	private int idRole;
 	private String nombre;
 	
+	public RoleDto() {}
+	
 	public RoleDto(int idRole, String nombre)
 	{
 		this.idRole = idRole;

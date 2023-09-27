@@ -6,7 +6,7 @@ public class UsuarioCreateDto extends UsuarioDto {
 	private int idSucursal;
 	private int requiereCambiarPassword = 0;
 	private String fotografia = null;
-
+	
 	public UsuarioCreateDto() {}
 	
 	public UsuarioCreateDto(String nombre, String apellido, String correo, String telefono, String fechaNacimiento,
@@ -17,6 +17,7 @@ public class UsuarioCreateDto extends UsuarioDto {
 		this.requiereCambiarPassword = requiereCambiarPassword;
 		this.fotografia = fotografia;
 	}
+
 
 	public String getFotografia() {
 		return fotografia;
