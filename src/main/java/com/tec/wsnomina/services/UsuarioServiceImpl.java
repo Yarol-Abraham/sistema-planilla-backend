@@ -248,7 +248,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			UsuarioEntity usuarioEntity = this.iUsuarioRepository.save(usuario.get());
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
-			usuarioResponse.setStrResponseMessage("USUARIO ELIMINADO CORRECTAMENTE");
+			usuarioResponse.setStrResponseMessage("USUARIO DESHABILITADO");
 			
 			UsuarioSucursalDto usuarioDto = new UsuarioSucursalDto(
 					usuarioEntity.getNombre(), 
