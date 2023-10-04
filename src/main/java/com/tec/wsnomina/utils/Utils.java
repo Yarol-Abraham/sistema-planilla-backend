@@ -1,8 +1,6 @@
 package com.tec.wsnomina.utils;
 
 import java.net.InetAddress;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.Random;
 
 public class Utils {
@@ -18,8 +16,6 @@ public class Utils {
 	    }
 	    return ipAddress;
 	 }
-
-
 	
 	public String clean(String cadena) 
 	{

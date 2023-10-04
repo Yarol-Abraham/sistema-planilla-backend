@@ -2,6 +2,7 @@ package com.tec.wsnomina.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,6 +116,64 @@ public class RoleServicelmpl implements RoleService {
 		return roleListResponse;
 	}
 	
-	
+	@Override
+	public RoleResponse updateRole(RoleDto role, String sessionId) 
+	{
+		RoleResponse roleResponse = new RoleResponse();
+		
+		try
+		{
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				roleResponse.setStrResponseCode(methods.GETERROR());
+				roleResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return roleResponse;
+			}
+			
+			role.setNombre(this.utils.clean(role.getNombre()));
+			
+			if(role.getNombre().isEmpty())
+			{
+				roleResponse.setStrResponseCode(methods.GETERROR());
+				roleResponse.setStrResponseMessage("El nombre es requerido");
+				return roleResponse;
+			}
+			
+			if(role.getIdRole() <= 0)
+			{
+				roleResponse.setStrResponseCode(methods.GETERROR());
+				roleResponse.setStrResponseMessage("No se puede identificar el rol seleccionado.");
+				return roleResponse;
+			}
+			
+			Optional<RoleEntity> roleEntity = this.iRoleRepository.findById(role.getIdRole());
+			
+			if(roleEntity.isEmpty())
+			{
+				roleResponse.setStrResponseCode(methods.GETERROR());
+				roleResponse.setStrResponseMessage("Error, No se encontro el rol a editar.");
+				return roleResponse;
+			}
+			
+			roleEntity.get().setNombre(role.getNombre());
+			this.iRoleRepository.save(roleEntity.get());
+			
+			roleResponse.setStrResponseCode(methods.GETERROR());
+			roleResponse.setStrResponseMessage("Exito, Datos guardados correctamente");
+			roleResponse.setRole(role);
+			return roleResponse;
+			
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Error en: RoleServicelmpl.updateRole() " + ex.getMessage());
+			roleResponse.setStrResponseCode(methods.GETERROR());
+			roleResponse.setStrResponseMessage("Error al intentar actualizar el rol, vuelve a intentarlo.");
+		}
+		
+		return roleResponse;
+	}
 	
 }

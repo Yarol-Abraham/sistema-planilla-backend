@@ -18,7 +18,6 @@ import com.tec.wsnomina.entity.SessionInformationResponse;
 import com.tec.wsnomina.entity.SucursalEntity;
 import com.tec.wsnomina.entity.UsuarioEntity;
 import com.tec.wsnomina.entity.UsuarioResponse;
-import com.tec.wsnomina.repository.IEmpresaRepository;
 import com.tec.wsnomina.repository.ISucursalRepository;
 import com.tec.wsnomina.repository.IUsuarioRepository;
 import com.tec.wsnomina.security.PasswordEncrypt;
@@ -32,12 +31,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 	// repository
 	@Autowired
 	private IUsuarioRepository iUsuarioRepository;
-
-	// empresa
-	@Autowired
-	private IEmpresaRepository iempresaRepository;
 	
-	// sucursal
+	// branch
 	@Autowired
 	private ISucursalRepository iSucursalRepository;
 	
@@ -123,7 +118,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			
 			usuarioResponse.setEntUsuario(usuarioDto);
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
-			usuarioResponse.setStrResponseMessage("USUARIO CREADO, PASSWORD: " + capPassword );
+			usuarioResponse.setStrResponseMessage("Usuario Creado, Contraseña generada: " + capPassword );
 		}
 		catch(Exception ex)
 		{
