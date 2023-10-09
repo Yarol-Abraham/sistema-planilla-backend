@@ -29,6 +29,12 @@ public class RoleController {
 		return this.roleServicelmpl.createRole(role, request.getHeader("Authorization"));
 	}
 	
+	@PostMapping("/update")
+	public RoleResponse updateRole(@RequestBody RoleDto role, HttpServletRequest request)
+	{
+		return this.roleServicelmpl.updateRole(role, request.getHeader("Authorization"));
+	}
+	
 	@GetMapping("/list")
 	public RoleListResponse getList( HttpServletRequest request)
 	{

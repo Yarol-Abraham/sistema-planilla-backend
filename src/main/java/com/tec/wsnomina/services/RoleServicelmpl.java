@@ -158,10 +158,12 @@ public class RoleServicelmpl implements RoleService {
 			}
 			
 			roleEntity.get().setNombre(role.getNombre());
+			roleEntity.get().setFechaModificacion(utils.getFechaHoraFormateada());
+			roleEntity.get().setUsuarioModificacion(sessionInformationResponse.getStrNombre());
 			this.iRoleRepository.save(roleEntity.get());
 			
-			roleResponse.setStrResponseCode(methods.GETERROR());
-			roleResponse.setStrResponseMessage("Exito, Datos guardados correctamente");
+			roleResponse.setStrResponseCode(methods.GETSUCCESS());
+			roleResponse.setStrResponseMessage("Exitoso, Datos guardados correctamente");
 			roleResponse.setRole(role);
 			return roleResponse;
 			
