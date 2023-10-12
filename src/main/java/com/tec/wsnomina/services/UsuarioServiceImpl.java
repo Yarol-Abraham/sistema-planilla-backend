@@ -212,7 +212,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return usuarioResponse;	
 	}
 	
-	public UsuarioResponse deleteUser(String IdUsuario, String sessionId)
+	public UsuarioResponse toUpOrDownUser(String IdUsuario, String sessionId, int OPCION)
 	{
 
 		UsuarioResponse usuarioResponse = new UsuarioResponse();
@@ -236,14 +236,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 				return usuarioResponse;
 			}
 			
-			usuario.get().setIdStatusUsuario(INACTIVO);
+			usuario.get().setIdStatusUsuario(OPCION);
 			usuario.get().setFechaModificacion(utils.getFechaHoraFormateada());
 			usuario.get().setUsuarioModificacion(sessionInformationResponse.getStrIdUsuario());
 			
 			UsuarioEntity usuarioEntity = this.iUsuarioRepository.save(usuario.get());
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
-			usuarioResponse.setStrResponseMessage("USUARIO DESHABILITADO");
+			
+			if(OPCION == INACTIVO)
+			{
+				usuarioResponse.setStrResponseMessage("USUARIO DESHABILITADO");
+			}
+			else if(OPCION == ACTIVO)
+			{
+				usuarioResponse.setStrResponseMessage("USUARIO HABILITADO");
+			}
 			
 			UsuarioSucursalDto usuarioDto = new UsuarioSucursalDto(
 					usuarioEntity.getNombre(), 

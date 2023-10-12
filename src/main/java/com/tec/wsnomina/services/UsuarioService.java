@@ -11,7 +11,7 @@ public interface UsuarioService {
 	
 	public UsuarioResponse updateUser(UsuarioCreateDto usuarioEntity, String sessionId);
 	
-	public UsuarioResponse deleteUser(String IdUsuario, String sessionId); 
+	public UsuarioResponse toUpOrDownUser(String IdUsuario, String sessionId, int OPCION); 
 	
 	public InformationResponse getUser(String sessionId);
 	

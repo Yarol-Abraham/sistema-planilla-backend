@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,9 @@ public class UsuarioController {
 	@Autowired 
 	private SessionServiceImpl sessionServiceImpl;
 	
+	private int INACTIVO = 3;
+	private int ACTIVO = 1;
+	
 	@PostMapping("/create")
 	public UsuarioResponse create(@RequestBody UsuarioCreateDto usuarioEntity, HttpServletRequest request)
 	{
@@ -48,7 +52,13 @@ public class UsuarioController {
 	@DeleteMapping("/delete/{IdUsuario}")
 	public UsuarioResponse delete(@PathVariable String IdUsuario, HttpServletRequest request)
 	{
-		return this.usuarioServiceImpl.deleteUser(IdUsuario, request.getHeader("Authorization"));
+		return this.usuarioServiceImpl.toUpOrDownUser(IdUsuario, request.getHeader("Authorization"), INACTIVO);
+	}
+	
+	@PutMapping("/release/{IdUsuario}")
+	public UsuarioResponse release(@PathVariable String IdUsuario, HttpServletRequest request)
+	{
+		return this.usuarioServiceImpl.toUpOrDownUser(IdUsuario, request.getHeader("Authorization"), ACTIVO);
 	}
 	
 	@GetMapping("/information")
