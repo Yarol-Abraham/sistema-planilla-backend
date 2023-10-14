@@ -2,8 +2,7 @@ package com.tec.wsnomina.entity;
 
 public class SessionChangePassword {
 
-	private String correoElectronico = "";
-	private String password = "";
+	private String currentPassword = "";
 	private String newPassword = "";
 	
 	public String getNewPassword() {
@@ -14,20 +13,12 @@ public class SessionChangePassword {
 		this.newPassword = newPassword;
 	}
 
-	public String getCorreoElectronico() {
-		return correoElectronico;
+	public String getCurrentPassword() {
+		return currentPassword;
 	}
-	
-	public void setCorreoElectronico(String correoElectronico) {
-		this.correoElectronico = correoElectronico;
-	}
-	
-	public String getPassword() {
-		return password;
-	}
-	
-	public void setPassword(String password) {
-		this.password = password;
+
+	public void setCurrentPassword(String currentPassword) {
+		this.currentPassword = currentPassword;
 	}
 	
 }

@@ -3,6 +3,7 @@ package com.tec.wsnomina.services;
 import com.tec.wsnomina.dto.UsuarioCreateDto;
 import com.tec.wsnomina.entity.InformationResponse;
 import com.tec.wsnomina.entity.ListUsuarioResponse;
+import com.tec.wsnomina.entity.SessionChangePassword;
 import com.tec.wsnomina.entity.UsuarioResponse;
 
 public interface UsuarioService {
@@ -17,4 +18,5 @@ public interface UsuarioService {
 	
 	public ListUsuarioResponse getUsers(String sessionId);
 	
+	public UsuarioResponse updatePassword(SessionChangePassword sessionCredentials, String sessionId);
 }

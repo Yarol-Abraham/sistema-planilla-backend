@@ -28,8 +28,6 @@ public class SessionServiceImpl implements SessionService {
 	@Autowired
 	private ISucursalRepository iSucursalRepository;
 	
-	private UsuarioEntity usuarioEntity = new UsuarioEntity();
-	
 	private Utils utils = new Utils();
 	private Methods methods = new Methods();
 	private PasswordEncrypt passwordEncrypt = new PasswordEncrypt();
@@ -38,6 +36,7 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public SessionInformationResponse generateSessionByUser(SessionCredentials sessionCredentials)
 	{
+		UsuarioEntity usuarioEntity = new UsuarioEntity();
 		SessionInformationResponse sessionInformationResponse = new SessionInformationResponse();
 		
 		try
@@ -174,7 +173,7 @@ public class SessionServiceImpl implements SessionService {
 				sessionInformationResponse.setStrResponseMessage("CREDENCIALES INVÁLIDAS, verifica que tu correo sea correcto");
 				return sessionInformationResponse;
 			}
-				
+			
 			sessionInformationResponse.setStrSessionId(sessionId);
 			sessionInformationResponse.setStrNombre(searchUser.get().getNombre());
 			sessionInformationResponse.setStrIdUsuario(searchUser.get().getIdUsuario());
@@ -194,7 +193,6 @@ public class SessionServiceImpl implements SessionService {
 		}
 		return sessionInformationResponse;
 	}
-	
 	
 	private SessionCredentials cleanValuesCredential(SessionCredentials sessionCredentials)
 	{

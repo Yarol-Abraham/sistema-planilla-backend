@@ -56,7 +56,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 		try
 		{
-			// VALIDAMOS PRIMERO LA SESION
+			// validate session
 			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
 			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
 			{
@@ -372,13 +372,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return listUsuarioResponse;
 	}
 	
-	public UsuarioResponse updatePassword(String sessionId, SessionChangePassword sessionCredentials)
+	@Override
+	public UsuarioResponse updatePassword( SessionChangePassword sessionCredentials, String sessionId)
 	{
 		UsuarioResponse usuarioResponse = new UsuarioResponse();
 		try
 		{
 			
-			// VALIDAMOS PRIMERO LA SESION
+			// 0.0 validated session
 			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
 			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
 			{
@@ -387,19 +388,45 @@ public class UsuarioServiceImpl implements UsuarioService {
 				return usuarioResponse;
 			}
 		
-			/*
-			if(this.passwordEncrypt.CompareToPasswords(userOptional.get().getPassword(), sessionCredentials.getPassword()))
+			// 1.0 clean values fields
+			sessionCredentials.setCurrentPassword(this.utils.clean(sessionCredentials.getCurrentPassword()));
+			sessionCredentials.setNewPassword(this.utils.clean(sessionCredentials.getNewPassword()));
+			
+			// 2.0 get user
+			Optional<UsuarioEntity> user = this.iUsuarioRepository.findById(sessionInformationResponse.getStrIdUsuario());
+			
+			// 2.0 validate current password
+			if(!this.passwordEncrypt.CompareToPasswords(user.get().getPassword(), sessionCredentials.getCurrentPassword()))
 			{
-				
-				
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("Contraseña actual no válida, verifica tu contraseña actual sea correcta");
+				return usuarioResponse;
 			}
-			*/
+			
+			// 3.0 if validate new password
+			boolean resultValidatedPassword = validatedPassword(user.get().getSucursal().getIdSucursal(), sessionCredentials.getCurrentPassword());
+		
+			if(!resultValidatedPassword)
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("contraseña no válida, no cumple con los estandares de seguridad");
+				return usuarioResponse;
+			}
+			
+			// 4.0 if is valid, update password
+			user.get().setPassword(sessionCredentials.getNewPassword());
+			this.iUsuarioRepository.save(user.get());
+			
+			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
+			usuarioResponse.setStrResponseMessage("Éxito, contraseña actualizada");
+			return usuarioResponse;
 		}
 		catch(Exception ex)
 		{
-			
+			usuarioResponse.setStrResponseCode(methods.GETERROR());
+			usuarioResponse.setStrResponseMessage("error al intentar actualizar la contraseña.");
+			return usuarioResponse;
 		}
-		return usuarioResponse;
 	}
 	
 	public String generatePassword(int idSucursal)
@@ -417,7 +444,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 	}
 	
-	// CLEAN VALUES
+	public boolean validatedPassword(int idSucursal, String password) 
+	{
+		Optional<SucursalEntity> sucursal = this.iSucursalRepository.findById(idSucursal);
+		EmpresaEntity empresa = sucursal.get().getEmpresa();
+		
+		int length = empresa.getPasswordLargo();
+		int minNumber = empresa.getPasswordCantidadNumeros();
+		int minLowercase = empresa.getPasswordCantidadMinusculas();
+		int minUppercase = empresa.getPasswordCantidadMayusculas();
+		int minCharacterEspecial = empresa.getPasswordCantidadCaracteresEspeciales();
+		
+		return this.utils.validatedPassword(length, minNumber, minLowercase, minUppercase, minCharacterEspecial, password);
+	}
+	
+	// clean values
 	private UsuarioCreateDto cleanValues(UsuarioCreateDto usuarioEntity, UsuarioResponse usuarioResponse, String OPERATION)
 	{
 		UsuarioCreateDto usuarioEntityClean = new UsuarioCreateDto();
@@ -428,8 +469,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuarioEntityClean.setFechaNacimiento(utils.clean(usuarioEntity.getFechaNacimiento()));
 		usuarioEntityClean.setTelefonoMovil(utils.clean(usuarioEntity.getTelefonoMovil()));
 		
-		usuarioEntityClean.setIdGenero(validNumber(this.utils.clean(String.valueOf(usuarioEntity.getIdGenero()))));
-		usuarioEntityClean.setIdSucursal(validNumber(this.utils.clean(String.valueOf(usuarioEntity.getIdSucursal()))));
+		usuarioEntityClean.setIdGenero(this.utils.validNumber(this.utils.clean(String.valueOf(usuarioEntity.getIdGenero()))));
+		usuarioEntityClean.setIdSucursal(this.utils.validNumber(this.utils.clean(String.valueOf(usuarioEntity.getIdSucursal()))));
 		
 		if(String.valueOf(usuarioEntityClean.getIdGenero()) == this.methods.GETERROR())
 		{
@@ -464,21 +505,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return usuarioEntityClean;
 	}
 	
-	private int validNumber(String strnumber)
-	{
-		int format = -1;
-		try
-		{
-			format = Integer.parseInt(strnumber);
-		}
-		catch(Exception ex)
-		{
-			System.out.println("ERROR AL CONVERTIR NUMERO: validNumber(): " + ex.getMessage());
-			format = -1;
-		}
-		return format;
-	}
-	
+
 }
 
 

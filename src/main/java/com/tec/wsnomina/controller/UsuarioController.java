@@ -15,6 +15,7 @@ import com.tec.wsnomina.dto.UsuarioCreateDto;
 import com.tec.wsnomina.dto.UsuarioSucursalDto;
 import com.tec.wsnomina.entity.InformationResponse;
 import com.tec.wsnomina.entity.ListUsuarioResponse;
+import com.tec.wsnomina.entity.SessionChangePassword;
 import com.tec.wsnomina.entity.SessionInformationResponse;
 import com.tec.wsnomina.entity.UsuarioResponse;
 import com.tec.wsnomina.services.SessionServiceImpl;
@@ -37,16 +38,15 @@ public class UsuarioController {
 	private int ACTIVO = 1;
 	
 	@PostMapping("/create")
-	public UsuarioResponse create(@RequestBody UsuarioCreateDto usuarioEntity, HttpServletRequest request)
+	public UsuarioResponse create(@RequestBody UsuarioCreateDto usuarioDto, HttpServletRequest request)
 	{
-		System.out.println("body: " + usuarioEntity);
-		return this.usuarioServiceImpl.createUser(usuarioEntity, request.getHeader("Authorization"));
+		return this.usuarioServiceImpl.createUser(usuarioDto, request.getHeader("Authorization"));
 	}
 	
 	@PostMapping("/update")
-	public UsuarioResponse update(@RequestBody UsuarioCreateDto usuarioEntity, HttpServletRequest request)
+	public UsuarioResponse update(@RequestBody UsuarioCreateDto usuarioDto, HttpServletRequest request)
 	{
-		return this.usuarioServiceImpl.updateUser(usuarioEntity, request.getHeader("Authorization"));
+		return this.usuarioServiceImpl.updateUser(usuarioDto, request.getHeader("Authorization"));
 	}
 	
 	@DeleteMapping("/delete/{IdUsuario}")
@@ -59,6 +59,12 @@ public class UsuarioController {
 	public UsuarioResponse release(@PathVariable String IdUsuario, HttpServletRequest request)
 	{
 		return this.usuarioServiceImpl.toUpOrDownUser(IdUsuario, request.getHeader("Authorization"), ACTIVO);
+	}
+	
+	@PutMapping("/update/password")
+	public UsuarioResponse updatePassword(@PathVariable SessionChangePassword sessionChangePassword, HttpServletRequest request)
+	{
+		return this.usuarioServiceImpl.updatePassword( sessionChangePassword, request.getHeader("Authorization"));
 	}
 	
 	@GetMapping("/information")

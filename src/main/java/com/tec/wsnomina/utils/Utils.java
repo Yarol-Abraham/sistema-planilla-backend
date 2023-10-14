@@ -29,11 +29,71 @@ public class Utils {
 	    }
 	    return respuesta;
 	}
-
 	
-	 /**
-     * return Get format date with hour
-     */
+	public boolean validatedPassword(int length, int minNumber, int minLowercase, int minUppercase, int minCharacterEspecial, String password) 
+	{
+		 String lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+         String uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+         String digitChars = "0123456789";
+         String specialChars = "!@#$%^&*()_+[]{}|;':,.<>?";
+         
+         int validatedQuantity = 0;
+         
+         if(password.length() < length) return false;
+         
+         for (int i = 0; i < password.length(); i++) 
+         {
+ 	        String caracter =  password.charAt(i) + "";
+ 	        if (digitChars.contains(caracter)) 
+ 	        {
+ 	            validatedQuantity++;
+ 	        }
+ 	    }
+        
+        if(validatedQuantity < minNumber) return false;
+        
+        validatedQuantity = 0;
+        
+        for (int i = 0; i < password.length(); i++) 
+        {
+	        String caracter =  password.charAt(i) + "";
+	        if (lowercaseChars.contains(caracter)) 
+	        {
+	            validatedQuantity++;
+	        }
+	    }
+        
+        if(validatedQuantity < minLowercase) return false;
+        
+        validatedQuantity = 0;
+        
+        for (int i = 0; i < password.length(); i++) 
+        {
+	        String caracter = password.charAt(i) + "";
+	        if (uppercaseChars.contains(caracter)) 
+	        {
+	            validatedQuantity++;
+	        }
+	    }
+        
+        if(validatedQuantity < minUppercase) return false;
+        
+        validatedQuantity = 0;
+        
+        for (int i = 0; i < password.length(); i++) 
+        {
+	        String caracter = password.charAt(i) + "";
+	        if (specialChars.contains(caracter)) 
+	        {
+	            validatedQuantity++;
+	        }
+	    }
+        
+        if(validatedQuantity < minCharacterEspecial) return false;
+        
+        return true;
+	}
+	
     public String getFechaHoraFormateada() 
     {
         java.util.GregorianCalendar today = new java.util.GregorianCalendar();
@@ -53,10 +113,7 @@ public class Utils {
 
         return fechaHora;
     }
-    
-    /*
-     * return Get format date
-     * */
+  
     public String getFecha() 
     {
         java.util.GregorianCalendar today = new java.util.GregorianCalendar();
@@ -137,5 +194,6 @@ public class Utils {
          
          return new String(passwordArray);
     }
+    
     
 }
