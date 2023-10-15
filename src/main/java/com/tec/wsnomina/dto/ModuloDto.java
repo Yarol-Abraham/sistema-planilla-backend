@@ -9,6 +9,8 @@ public class ModuloDto {
 	private int ordenMenu;
 	private List<MenuDto> menu;
 	
+	public ModuloDto(){}
+	
 	public  ModuloDto(int idModulo, String nombre, int ordenMenu, List<MenuDto> menu)
 	{
 		this.idModulo = idModulo;

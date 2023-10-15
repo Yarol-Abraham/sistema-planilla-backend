@@ -3,6 +3,8 @@ package com.tec.wsnomina.utils;
 import java.net.InetAddress;
 import java.util.Random;
 
+import com.tec.wsnomina.dto.ValidatePasswordDto;
+
 public class Utils {
 	
 	public String getLocalIpAddress() 
@@ -30,8 +32,10 @@ public class Utils {
 	    return respuesta;
 	}
 	
-	public boolean validatedPassword(int length, int minNumber, int minLowercase, int minUppercase, int minCharacterEspecial, String password) 
+	public ValidatePasswordDto validatedPassword(int length, int minNumber, int minLowercase, int minUppercase, int minCharacterEspecial, String password) 
 	{
+		ValidatePasswordDto validatePasswordDto = new ValidatePasswordDto();
+		
 		 String lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
          String uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
          String digitChars = "0123456789";
@@ -39,7 +43,12 @@ public class Utils {
          
          int validatedQuantity = 0;
          
-         if(password.length() < length) return false;
+         if(password.length() < length) 
+         {
+        	 validatePasswordDto.setMessage("La contraseña debe de tener un minimo de: " + String.valueOf(length) + " caracteres ");
+        	 validatePasswordDto.setValid(false);
+        	 return validatePasswordDto;
+         }
          
          for (int i = 0; i < password.length(); i++) 
          {
@@ -50,7 +59,12 @@ public class Utils {
  	        }
  	    }
         
-        if(validatedQuantity < minNumber) return false;
+        if(validatedQuantity < minNumber)
+        {
+        	 validatePasswordDto.setMessage("La contraseña debe de tener un minimo de: " + String.valueOf(minNumber) + " numeros ");
+        	 validatePasswordDto.setValid(false);
+        	 return validatePasswordDto;
+        }
         
         validatedQuantity = 0;
         
@@ -63,7 +77,12 @@ public class Utils {
 	        }
 	    }
         
-        if(validatedQuantity < minLowercase) return false;
+        if(validatedQuantity < minLowercase)
+        {
+        	 validatePasswordDto.setMessage("La contraseña debe de tener un minimo de: " + String.valueOf(minLowercase) + " caracteres minúsculas ");
+        	 validatePasswordDto.setValid(false);
+        	 return validatePasswordDto;
+        }
         
         validatedQuantity = 0;
         
@@ -76,7 +95,12 @@ public class Utils {
 	        }
 	    }
         
-        if(validatedQuantity < minUppercase) return false;
+        if(validatedQuantity < minUppercase)
+        {
+        	 validatePasswordDto.setMessage("La contraseña debe de tener un minimo de: " + String.valueOf(minUppercase) + " caracteres mayúsculas ");
+        	 validatePasswordDto.setValid(false);
+        	 return validatePasswordDto;
+        }
         
         validatedQuantity = 0;
         
@@ -89,9 +113,16 @@ public class Utils {
 	        }
 	    }
         
-        if(validatedQuantity < minCharacterEspecial) return false;
+        if(validatedQuantity < minCharacterEspecial)
+        {
+        	 validatePasswordDto.setMessage("La contraseña debe de tener un minimo de: " + String.valueOf(minCharacterEspecial) + " caracteres especiales ");
+        	 validatePasswordDto.setValid(false);
+        	 return validatePasswordDto;
+        }
         
-        return true;
+        validatePasswordDto.setMessage("");
+   	 	validatePasswordDto.setValid(true);
+        return validatePasswordDto;
 	}
 	
     public String getFechaHoraFormateada() 

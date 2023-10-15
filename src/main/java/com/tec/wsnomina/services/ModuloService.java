@@ -1,9 +1,11 @@
 package com.tec.wsnomina.services;
 
-import com.tec.wsnomina.entity.MenuResponse;
+import com.tec.wsnomina.dto.ModuloDto;
+import com.tec.wsnomina.entity.ModuloResponse;
 
 public interface ModuloService {
 	
-	public MenuResponse getMenu(String sessionId);
+	public ModuloResponse createModulo(ModuloDto modulo, String sessionId);
+	public ModuloResponse updateModulo(ModuloDto modulo, String sessionId);
 	
 }

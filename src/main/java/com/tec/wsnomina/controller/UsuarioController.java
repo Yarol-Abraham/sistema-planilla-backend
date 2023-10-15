@@ -62,7 +62,7 @@ public class UsuarioController {
 	}
 	
 	@PutMapping("/update/password")
-	public UsuarioResponse updatePassword(@PathVariable SessionChangePassword sessionChangePassword, HttpServletRequest request)
+	public UsuarioResponse updatePassword(@RequestBody SessionChangePassword sessionChangePassword, HttpServletRequest request)
 	{
 		return this.usuarioServiceImpl.updatePassword( sessionChangePassword, request.getHeader("Authorization"));
 	}

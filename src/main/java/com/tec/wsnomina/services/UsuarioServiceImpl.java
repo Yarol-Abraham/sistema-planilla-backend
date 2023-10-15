@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.tec.wsnomina.dto.UsuarioCreateDto;
 import com.tec.wsnomina.dto.UsuarioDto;
 import com.tec.wsnomina.dto.UsuarioSucursalDto;
+import com.tec.wsnomina.dto.ValidatePasswordDto;
 import com.tec.wsnomina.entity.EmpresaEntity;
 import com.tec.wsnomina.entity.InformationResponse;
 import com.tec.wsnomina.entity.ListUsuarioResponse;
@@ -376,6 +377,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	public UsuarioResponse updatePassword( SessionChangePassword sessionCredentials, String sessionId)
 	{
 		UsuarioResponse usuarioResponse = new UsuarioResponse();
+		usuarioResponse.setEntUsuario(null);
 		try
 		{
 			
@@ -387,10 +389,34 @@ public class UsuarioServiceImpl implements UsuarioService {
 				usuarioResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
 				return usuarioResponse;
 			}
-		
+			
 			// 1.0 clean values fields
 			sessionCredentials.setCurrentPassword(this.utils.clean(sessionCredentials.getCurrentPassword()));
 			sessionCredentials.setNewPassword(this.utils.clean(sessionCredentials.getNewPassword()));
+			sessionCredentials.setConfirmNewPassword(this.utils.clean(sessionCredentials.getConfirmNewPassword()));
+			
+			// 1.1 validate fields
+			if(sessionCredentials.getCurrentPassword().trim().equals(""))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("Contraseña actual no válida, verifica tu contraseña actual sea correcta");
+				return usuarioResponse;
+			}
+			
+			if( sessionCredentials.getNewPassword().trim().equals("") || sessionCredentials.getConfirmNewPassword().trim().equals(""))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("no se puede actualizar la contraseña, ingresa una contraseña válida");
+				return usuarioResponse;	
+			}
+			
+			// 1.2 validated if new password is equals a confirm password
+			if(!sessionCredentials.getConfirmNewPassword().equals(sessionCredentials.getNewPassword()))
+			{
+				usuarioResponse.setStrResponseCode(methods.GETERROR());
+				usuarioResponse.setStrResponseMessage("Las contraseñas no son iguales");
+				return usuarioResponse;
+			}
 			
 			// 2.0 get user
 			Optional<UsuarioEntity> user = this.iUsuarioRepository.findById(sessionInformationResponse.getStrIdUsuario());
@@ -404,21 +430,21 @@ public class UsuarioServiceImpl implements UsuarioService {
 			}
 			
 			// 3.0 if validate new password
-			boolean resultValidatedPassword = validatedPassword(user.get().getSucursal().getIdSucursal(), sessionCredentials.getCurrentPassword());
+			ValidatePasswordDto resultValidatedPassword = validatedPassword(user.get().getSucursal().getIdSucursal(), sessionCredentials.getNewPassword());
 		
-			if(!resultValidatedPassword)
+			if(!resultValidatedPassword.isValid())
 			{
 				usuarioResponse.setStrResponseCode(methods.GETERROR());
-				usuarioResponse.setStrResponseMessage("contraseña no válida, no cumple con los estandares de seguridad");
+				usuarioResponse.setStrResponseMessage(resultValidatedPassword.getMessage());
 				return usuarioResponse;
 			}
 			
 			// 4.0 if is valid, update password
-			user.get().setPassword(sessionCredentials.getNewPassword());
+			user.get().setPassword(passwordEncrypt.generateEncrypt(sessionCredentials.getNewPassword()));
 			this.iUsuarioRepository.save(user.get());
 			
 			usuarioResponse.setStrResponseCode(methods.GETSUCCESS());
-			usuarioResponse.setStrResponseMessage("Éxito, contraseña actualizada");
+			usuarioResponse.setStrResponseMessage("Éxitoso, contraseña actualizada");
 			return usuarioResponse;
 		}
 		catch(Exception ex)
@@ -444,7 +470,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 		
 	}
 	
-	public boolean validatedPassword(int idSucursal, String password) 
+	public ValidatePasswordDto validatedPassword(int idSucursal, String password) 
 	{
 		Optional<SucursalEntity> sucursal = this.iSucursalRepository.findById(idSucursal);
 		EmpresaEntity empresa = sucursal.get().getEmpresa();
