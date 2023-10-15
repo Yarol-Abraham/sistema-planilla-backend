@@ -68,8 +68,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 						
 			usuarioCreateDto = cleanValues(usuarioCreateDto, usuarioResponse, "CREATE");
 			
-			if(usuarioResponse.getStrResponseCode().equals(methods.GETERROR()))
-				return usuarioResponse;
+			if(usuarioResponse.getStrResponseCode().equals(methods.GETERROR())) return usuarioResponse;
 			
 			Optional<UsuarioEntity> usuarioSearch = this.iUsuarioRepository.findByCorreoElectronico(usuarioCreateDto.getCorreoElectronico());
 			

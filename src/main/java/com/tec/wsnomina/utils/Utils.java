@@ -161,10 +161,17 @@ public class Utils {
     
     public int validNumber(String strnumber)
 	{
+    	
 		int format = -1;
 		try
 		{
-			format = Integer.parseInt(strnumber);
+			if(!strnumber.trim().equals(""))
+			{
+				format = Integer.parseInt(strnumber);
+			}
+			else {
+				format = -1;
+			}
 		}
 		catch(Exception ex)
 		{
