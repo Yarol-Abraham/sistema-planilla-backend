@@ -113,7 +113,7 @@ public class EmailService implements EmailPort {
 		if(user.equals(null))
 		{
 			emailResponse.setStrResponseCode(methods.GETERROR());
-			emailResponse.setStrResponseMessage("token de verificación inválido");
+			emailResponse.setStrResponseMessage("token de verificación inválido o token expirado");
 			return emailResponse;	
 		}
 		
@@ -129,6 +129,13 @@ public class EmailService implements EmailPort {
 		EmailResponse emailResponse = verifyPassword(token);
 		try
 		{
+			if(emailResponse.getStrResponseCode().equals(methods.GETERROR()))
+			{
+				emailResponse.setStrResponseCode(methods.GETERROR());
+				emailResponse.setStrResponseMessage("token de verificación inválido o token expirado");
+				return emailResponse;
+			}
+			
 			String captureNewPassword = emailResponse.getStrResponseMessage();
 			
 			user.setPassword(passwordEncrypt.generateEncrypt(captureNewPassword));
@@ -577,7 +584,7 @@ public class EmailService implements EmailPort {
 	        message.setContent(htmlContent, "text/html; charset=utf-8");
 	        mailSender.send(message);
 	        
-	        emailResponse.setStrResponseCode(methods.GETERROR());
+	        emailResponse.setStrResponseCode(methods.GETSUCCESS());
 			emailResponse.setStrResponseMessage("Se ha enviado la contraseña de restauracion a tu correo!");
 			
 		}
