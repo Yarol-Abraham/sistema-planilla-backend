@@ -34,7 +34,13 @@ public class WebSecurityConfig {
 				.csrf().disable().cors().and()
 		        .authorizeHttpRequests( 
 		        		(requests) ->
-		        			requests.requestMatchers(new AntPathRequestMatcher("/auth/login")).permitAll()
+		        			requests.requestMatchers(
+		        					new AntPathRequestMatcher("/auth/login"),
+		        					new AntPathRequestMatcher("/tec/email/recovery/password"),
+		        					new AntPathRequestMatcher("/tec/email/alert/newpassword"),
+		        					new AntPathRequestMatcher("/tec/email/confirm/newpassword")
+		        			)
+		        			.permitAll()
 		        			.anyRequest().authenticated()
 		        		)
 		        .sessionManagement()

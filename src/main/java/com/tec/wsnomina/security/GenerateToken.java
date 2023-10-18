@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -39,6 +40,46 @@ public class GenerateToken {
             System.out.println("ERROR EN: createToken() " + e.getMessage());
             System.out.println(e.getStackTrace()); 
             return "";
+         }
+     }
+     
+     public static String createTokenForRecoverPassword(String keyword, String correo) 
+     {
+    	 long	TIME_CURRENT_SYSTEM = System.currentTimeMillis(); 
+         long	TIME_MILLISECOND	= 900000; // equivalent: 15 minutes
+         long	DUPLICATE_TIME 		= 1; // example: 900000 * 4 -> 1 hour; 
+         
+    	 try {
+             String jws = Jwts.builder()
+                 .signWith(generateKey(), SignatureAlgorithm.HS256)
+                 .claim("keyword", keyword)
+                 .claim("correo", correo)
+                 .setExpiration(new Date(TIME_CURRENT_SYSTEM + (TIME_MILLISECOND*DUPLICATE_TIME)))
+                 .setIssuedAt(new Date(TIME_CURRENT_SYSTEM))
+                 .compact();
+             return jws;
+         } catch (JwtException e) {
+            System.out.println("ERROR EN: createTokenForRecoverPassword() " + e.getMessage());
+            System.out.println(e.getStackTrace()); 
+            return "";
+         }
+     }
+     
+     public static Claims getTokenForRecoverPassword(String jws) 
+     {
+    	  try
+          {
+           Jws<Claims> _jws = Jwts.parserBuilder()
+                   .setSigningKey(generateKey())
+                   .build()
+                   .parseClaimsJws(jws);
+           
+           return _jws.getBody();
+          } 
+          catch (JwtException e) 
+    	  {
+                 System.out.println(e.getMessage());
+                 return null;
          }
      }
      

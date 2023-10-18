@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tec.wsnomina.dto.ModuloDto;
-import com.tec.wsnomina.dto.UsuarioCreateDto;
 import com.tec.wsnomina.entity.ModuloResponse;
-import com.tec.wsnomina.entity.UsuarioResponse;
 import com.tec.wsnomina.services.ModuloServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;

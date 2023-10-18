@@ -33,7 +33,6 @@ public class ModuloServiceImpl implements ModuloService {
 		ModuloResponse moduloResponse = new ModuloResponse();
 		try
 		{
-			System.out.println("que mierdaaaaaaaaaaaaaa: " + modulo.getOrdenMenu());
 			
 			// validate session
 			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));

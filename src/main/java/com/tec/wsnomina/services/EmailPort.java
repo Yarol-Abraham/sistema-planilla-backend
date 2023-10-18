@@ -1,9 +1,12 @@
 package com.tec.wsnomina.services;
 
-import com.tec.wsnomina.dto.EmailBodyDto;
+import com.tec.wsnomina.entity.EmailResponse;
 
 public interface EmailPort {
 
-	public boolean sendEmail(EmailBodyDto emailBody);
-
+	public EmailResponse sendEmail(String email);
+	
+	public EmailResponse verifyPassword(String token);
+	
+	public EmailResponse confirmNewPassword(String token);
 }
