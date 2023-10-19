@@ -12,4 +12,6 @@ public interface RoleService {
 	
 	public RoleResponse updateRole(RoleDto role, String sessionId);
 	
+	public RoleListResponse getUnassignedRoles(String idUsuario, String sessionId);
+	
 }

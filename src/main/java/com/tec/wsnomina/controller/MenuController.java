@@ -6,8 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.tec.wsnomina.entity.MenuListResponse;
 import com.tec.wsnomina.entity.MenuResponse;
 import com.tec.wsnomina.services.MenuServiceImpl;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @CrossOrigin("http://localhost:5173")
@@ -21,6 +25,12 @@ public class MenuController {
 	public MenuResponse getMenu(@PathVariable String IdRole)
 	{
 		return menuServiceImpl.getMenu(IdRole);
+	}
+	
+	@GetMapping("/modulo/{IdModulo}")
+	public MenuListResponse getListMenu(@PathVariable int IdModulo,  HttpServletRequest request)
+	{
+		return menuServiceImpl.getListMenu(IdModulo, request.getHeader("Authorization"));
 	}
 	
 }

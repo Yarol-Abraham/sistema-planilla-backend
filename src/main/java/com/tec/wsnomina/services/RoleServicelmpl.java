@@ -3,6 +3,7 @@ package com.tec.wsnomina.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -178,4 +179,37 @@ public class RoleServicelmpl implements RoleService {
 		return roleResponse;
 	}
 	
+	@Override
+	public RoleListResponse getUnassignedRoles(String idUsuario, String sessionId)
+	{
+		RoleListResponse roleResponse = new RoleListResponse();
+		
+		try
+		{
+			// VALIDAMOS PRIMERO LA SESION
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				roleResponse.setStrResponseCode(methods.GETERROR());
+				roleResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return roleResponse;
+			}
+			
+			List<RoleDto> roles = this.iRoleRepository.obtenerRolesNoAsignadosAlUsuario(idUsuario)
+									.stream()
+									.map( role -> new RoleDto(role.getIdRole(), role.getNombre()) )
+									.collect(Collectors.toList());
+			
+			roleResponse.setStrResponseCode(methods.GETSUCCESS());
+			roleResponse.setStrResponseMessage("roles no asignados obtenidos correctamente");
+			roleResponse.setRoles(roles);			
+		}
+		catch(Exception ex)
+		{
+			roleResponse.setStrResponseCode(methods.GETERROR());
+			roleResponse.setStrResponseMessage("error, no se puede obtener los roles no asignados");
+		}
+		
+		return roleResponse;
+	}
 }

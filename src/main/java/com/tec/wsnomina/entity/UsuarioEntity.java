@@ -223,15 +223,7 @@ public void setSucursal(SucursalEntity sucursal) {
 	public void setTelefonoMovil(String telefonoMovil) {
 		this.telefonoMovil = telefonoMovil;
 	}
-	/*
-	public int getIdSucursal() {
-		return idSucursal;
-	}
 	
-	public void setIdSucursal(int idSucursal) {
-		this.idSucursal = idSucursal;
-	}
-	*/
 	public String getFechaCreacion() {
 		return fechaCreacion;
 	}

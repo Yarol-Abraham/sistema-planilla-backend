@@ -1,28 +1,22 @@
 package com.tec.wsnomina.dto;
 
-public class MenuDto {
+import java.util.List;
 
-	private int idModulo;
+public class MenuOptionDto {
+
 	private int idMenu;
 	private String nombre;
 	private int ordenMenu;
+	private List<OptionDto> opciones;
 	
-	public MenuDto(int idModulo, int idMenu, String nombre, int ordenMenu) {
-		super();
-		this.idModulo = idModulo;
+	public MenuOptionDto(int idMenu, String nombre, int ordenMenu, List<OptionDto> opciones)
+	{
 		this.idMenu = idMenu;
 		this.nombre = nombre;
 		this.ordenMenu = ordenMenu;
+		this.opciones = opciones;
 	}
-
-	public int getIdModulo() {
-		return idModulo;
-	}
-
-	public void setIdModulo(int idModulo) {
-		this.idModulo = idModulo;
-	}
-
+	
 	public int getIdMenu() {
 		return idMenu;
 	}
@@ -46,8 +40,13 @@ public class MenuDto {
 	public void setOrdenMenu(int ordenMenu) {
 		this.ordenMenu = ordenMenu;
 	}
-	
-	
-	
+
+	public List<OptionDto> getOpciones() {
+		return opciones;
+	}
+
+	public void setOpciones(List<OptionDto> opciones) {
+		this.opciones = opciones;
+	}
 	
 }

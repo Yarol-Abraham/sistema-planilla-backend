@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tec.wsnomina.dto.MenuDto;
+import com.tec.wsnomina.dto.MenuOptionDto;
 import com.tec.wsnomina.dto.ModuloDto;
 import com.tec.wsnomina.dto.OptionDto;
 import com.tec.wsnomina.dto.StatusRoleOpcionDto;
+import com.tec.wsnomina.entity.MenuListResponse;
 import com.tec.wsnomina.entity.MenuResponse;
 import com.tec.wsnomina.entity.RoleOptionEntity;
+import com.tec.wsnomina.entity.SessionInformationResponse;
+import com.tec.wsnomina.repository.IMenuRepository;
 import com.tec.wsnomina.repository.IModuloRepository;
 import com.tec.wsnomina.repository.IRoleOptionRepository;
 import com.tec.wsnomina.utils.Methods;
@@ -25,12 +29,22 @@ public class MenuServiceImpl implements MenuService {
 	private IModuloRepository iModuloRepository;
 	
 	@Autowired
+	private IMenuRepository iMenuRepository;
+	
+	@Autowired
 	private IRoleOptionRepository iRoleOptionRepository;
 	
+	
+	
+	// services
+	@Autowired
+	private SessionServiceImpl sessionServiceImpl;
+		
 	private Utils utils = new Utils();
 	private Methods methods = new Methods();
 	private MenuResponse menuResponse = new MenuResponse();
 	
+	@Override
 	public MenuResponse getMenu(String idRole)
 	{
 		try
@@ -84,7 +98,7 @@ public class MenuServiceImpl implements MenuService {
 															);
 												}
 											).collect(Collectors.toList());
-									return new MenuDto(menu.getIdMenu(), menu.getNombre(), menu.getOrdenMenu(), optionsFilter);
+									return new MenuOptionDto(menu.getIdMenu(), menu.getNombre(), menu.getOrdenMenu(), optionsFilter);
 								}
 								).collect(Collectors.toList())
 							)
@@ -104,5 +118,41 @@ public class MenuServiceImpl implements MenuService {
 		
 		return menuResponse;
 	}
+	
+	@Override
+	public MenuListResponse getListMenu(int idModulo, String sessionId)
+	{
+		MenuListResponse menuListResponse = new MenuListResponse();
+		
+		try 
+		{
+			// validate session
+			SessionInformationResponse sessionInformationResponse = this.sessionServiceImpl.getByInformationUserSesion(this.utils.clean(sessionId));
+			if(!sessionInformationResponse.getStrResponseCode().equals(this.methods.GETSUCCESS()))
+			{
+				menuListResponse.setStrResponseCode(methods.GETERROR());
+				menuListResponse.setStrResponseMessage(sessionInformationResponse.getStrResponseMessage());
+				return menuListResponse;
+			}	
+			
+			List<MenuDto> list = this.iMenuRepository.getFindAllByIdModulo(idModulo).stream()
+					.map( menu -> new MenuDto(menu.getModulo().getIdModulo(), menu.getIdMenu(), menu.getNombre(), menu.getOrdenMenu())
+					).collect(Collectors.toList());
+			
+			menuListResponse.setStrResponseCode(methods.GETSUCCESS());
+			menuListResponse.setStrResponseMessage("listado obtenido correctamente");
+			menuListResponse.setMenus(list);
+			return menuListResponse;
+			
+		}
+		catch(Exception ex)
+		{
+			System.out.println("ERROR EN: MenuServiceImpl.getListMenu(): " + ex.getMessage());
+			menuListResponse.setStrResponseCode(methods.GETERROR());
+			menuListResponse.setStrResponseMessage("Error al obtener el listado del menu");
+		}
+		return menuListResponse;
+	}
+	
 	
 }

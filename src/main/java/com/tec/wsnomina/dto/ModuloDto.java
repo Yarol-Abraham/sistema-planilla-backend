@@ -7,11 +7,11 @@ public class ModuloDto {
 	private int idModulo;
 	private String nombre;
 	private int ordenMenu;
-	private List<MenuDto> menu;
+	private List<MenuOptionDto> menu;
 	
 	public ModuloDto(){}
 	
-	public  ModuloDto(int idModulo, String nombre, int ordenMenu, List<MenuDto> menu)
+	public  ModuloDto(int idModulo, String nombre, int ordenMenu, List<MenuOptionDto> menu)
 	{
 		this.idModulo = idModulo;
 		this.nombre = nombre;
@@ -38,11 +38,11 @@ public class ModuloDto {
 		this.ordenMenu = ordenMenu;
 	}
 
-	public List<MenuDto> getMenu() {
+	public List<MenuOptionDto> getMenu() {
 		return menu;
 	}
 
-	public void setMenu(List<MenuDto> menu) {
+	public void setMenu(List<MenuOptionDto> menu) {
 		this.menu = menu;
 	}
 	
