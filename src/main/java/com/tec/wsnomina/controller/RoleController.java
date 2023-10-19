@@ -10,9 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tec.wsnomina.dto.RoleDto;
+import com.tec.wsnomina.dto.RoleOpcionCreateDto;
 import com.tec.wsnomina.dto.UsuarioRoleDto;
+import com.tec.wsnomina.entity.RoleListOpcionResponse;
 import com.tec.wsnomina.entity.RoleListResponse;
+import com.tec.wsnomina.entity.RoleOpcionResponse;
 import com.tec.wsnomina.entity.RoleResponse;
+import com.tec.wsnomina.services.RoleOptionServiceImpl;
 import com.tec.wsnomina.services.RoleServicelmpl;
 import com.tec.wsnomina.services.UsuarioRoleServiceImpl;
 
@@ -28,6 +32,9 @@ public class RoleController {
 	
 	@Autowired
 	UsuarioRoleServiceImpl usuarioRoleServiceImpl;
+	
+	@Autowired
+	RoleOptionServiceImpl roleOptionServiceImpl;
 	
 	@PostMapping("/create")
 	public RoleResponse createRole(@RequestBody RoleDto role, HttpServletRequest request)
@@ -47,16 +54,28 @@ public class RoleController {
 		return this.roleServicelmpl.getList(request.getHeader("Authorization"));
 	}
 	
-	@GetMapping("/list/unassigned/{idUsuario}")
+	@GetMapping("/user/unassigned/{idUsuario}")
 	public RoleListResponse getListNotAssing(@PathVariable String idUsuario, HttpServletRequest request)
 	{
 		return this.roleServicelmpl.getUnassignedRoles(idUsuario, request.getHeader("Authorization"));
 	}
 	
-	@PostMapping("/assign")
+	@PostMapping("/user/assign")
 	public RoleResponse assignRole(@RequestBody UsuarioRoleDto usuarioRoleDto, HttpServletRequest request)
 	{
 		return this.usuarioRoleServiceImpl.grantPermission(usuarioRoleDto,  request.getHeader("Authorization"));
+	}
+	
+	@GetMapping("/options/unassigned/{idRole}")
+	public RoleListOpcionResponse getUnassignedOptions(@PathVariable String idRole,  HttpServletRequest request)
+	{
+		return this.roleOptionServiceImpl.getUnassignedOptions(idRole, request.getHeader("Authorization"));
+	}
+	
+	@PostMapping("/options/assign")
+	public RoleOpcionResponse grantPermissionOptions(@RequestBody RoleOpcionCreateDto roleOpcionCreate,  HttpServletRequest request)
+	{
+		return this.roleOptionServiceImpl.grantPermission(roleOpcionCreate, request.getHeader("Authorization"));
 	}
 	
 	@GetMapping("/test")

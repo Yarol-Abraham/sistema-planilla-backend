@@ -64,10 +64,7 @@ public class UsuarioEntity {
    
    @Column(name = "TelefonoMovil")
    private String telefonoMovil = "";
-   /*
-   @Column(name = "IdSucursal")
-   private int idSucursal = 0;
-  */ 
+   
    @OneToOne
    @JoinColumn(name = "IdSucursal", referencedColumnName =  "IdSucursal")
    private SucursalEntity sucursal;

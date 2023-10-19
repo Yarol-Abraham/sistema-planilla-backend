@@ -46,7 +46,6 @@ public class OptionEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
 
-	
 	@OneToMany(mappedBy =  "opcion")
 	private List<RoleOptionEntity> roleopciones;
 	

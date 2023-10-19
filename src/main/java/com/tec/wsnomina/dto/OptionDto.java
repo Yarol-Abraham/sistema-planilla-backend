@@ -11,18 +11,28 @@ public class OptionDto {
 	private int cambio;
 	private int imprimir;
 	private int exportar;
-
-	public OptionDto(int idOpcion, String nombre, int ordenMenu, String pagina, int alta, int baja, int cambio, int imprimir, int exportar)
-	{
+	
+	public OptionDto() {}
+	
+	public OptionDto(int idOpcion, String nombre, int ordenMenu, String pagina, int alta, int baja, int cambio,int imprimir, int exportar) {
+		super();
 		this.idOpcion = idOpcion;
 		this.nombre = nombre;
 		this.ordenMenu = ordenMenu;
-		this.pagina = pagina; 
+		this.pagina = pagina;
 		this.alta = alta;
 		this.baja = baja;
 		this.cambio = cambio;
 		this.imprimir = imprimir;
 		this.exportar = exportar;
+	}
+
+	public OptionDto(int idOpcion, String nombre, int ordenMenu, String pagina)
+	{
+		this.idOpcion = idOpcion;
+		this.nombre = nombre;
+		this.ordenMenu = ordenMenu;
+		this.pagina = pagina; 
 	}
 
 	public int getIdOpcion() {

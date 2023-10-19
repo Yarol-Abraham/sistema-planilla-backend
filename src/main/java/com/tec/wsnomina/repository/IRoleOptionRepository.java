@@ -11,11 +11,4 @@ import com.tec.wsnomina.entity.key.RoleOptionKey;
 public interface IRoleOptionRepository  extends JpaRepository<RoleOptionEntity, RoleOptionKey>{
 
 	public List<RoleOptionEntity> findByid_IdRole(int idRole);
-	
-//	@Query("SELECT r.idOpcion, r.nombre, r.ordenMenu, r.pagina, r.alta FROM RoleOptionEntity r WHERE r.idRole = :paramIdRole")
-	//public Set<OptionDto> findOpcionesIdsByIdRole(@Param("paramIdRole") int idRole);
-	//public Set<Integer> findOpcionesIdsByIdRole(@Param("paramIdRole") int idRole);
-	
-	//@Query("SELECT r FROM RoleOptionEntity r WHERE r.idRole = :paramIdRole and r.idOpcion = :paramIdOpcion")
-//	public RoleOptionEntity findByIdOpcionAndIdRole(@Param("paramIdRole")int idRole,@Param("paramIdOpcion") int idOpcion);
 }
