@@ -1,10 +1,13 @@
 package com.tec.wsnomina.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -31,6 +34,9 @@ public class GeneroEntity {
 	@Column(name = "UsuarioModificacion")
 	private String usuarioModificacion = null;
 
+	@OneToMany(mappedBy = "genero")
+    private List<PersonaEntity> personas;
+	
 	public int getIdGenero() {
 		return idGenero;
 	}
@@ -77,6 +83,14 @@ public class GeneroEntity {
 
 	public void setUsuarioModificacion(String usuarioModificacion) {
 		this.usuarioModificacion = usuarioModificacion;
+	}
+
+	public List<PersonaEntity> getPersonas() {
+		return personas;
+	}
+
+	public void setPersonas(List<PersonaEntity> personas) {
+		this.personas = personas;
 	}
 
 	

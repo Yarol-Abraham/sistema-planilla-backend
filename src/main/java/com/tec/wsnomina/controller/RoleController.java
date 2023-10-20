@@ -1,5 +1,7 @@
 package com.tec.wsnomina.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,10 +62,28 @@ public class RoleController {
 		return this.roleServicelmpl.getUnassignedRoles(idUsuario, request.getHeader("Authorization"));
 	}
 	
-	@PostMapping("/user/assign")
-	public RoleResponse assignRole(@RequestBody UsuarioRoleDto usuarioRoleDto, HttpServletRequest request)
+	@GetMapping("/user/assigned/{idUsuario}")
+	public RoleListResponse getListAssing(@PathVariable String idUsuario, HttpServletRequest request)
 	{
-		return this.usuarioRoleServiceImpl.grantPermission(usuarioRoleDto,  request.getHeader("Authorization"));
+		return this.roleServicelmpl.getAssignedRoles(idUsuario, request.getHeader("Authorization"));
+	}
+	
+	@PostMapping("/user/assign")
+	public RoleResponse assignRole(@RequestBody List<UsuarioRoleDto> usuarioRoleDtos, HttpServletRequest request)
+	{
+		return this.usuarioRoleServiceImpl.grantPermission(usuarioRoleDtos, "CREATE",  request.getHeader("Authorization"));
+	}
+	
+	@PostMapping("/user/unassign")
+	public RoleResponse unassign(@RequestBody List<UsuarioRoleDto> usuarioRoleDtos, HttpServletRequest request)
+	{
+		return this.usuarioRoleServiceImpl.grantPermission(usuarioRoleDtos, "DELETE",  request.getHeader("Authorization"));
+	}
+	
+	@GetMapping("/options/assigned/{idRole}")
+	public RoleListOpcionResponse getAssignedOptions(@PathVariable String idRole,  HttpServletRequest request)
+	{
+		return this.roleOptionServiceImpl.getAssignedOptions(idRole, request.getHeader("Authorization"));
 	}
 	
 	@GetMapping("/options/unassigned/{idRole}")
@@ -73,9 +93,15 @@ public class RoleController {
 	}
 	
 	@PostMapping("/options/assign")
-	public RoleOpcionResponse grantPermissionOptions(@RequestBody RoleOpcionCreateDto roleOpcionCreate,  HttpServletRequest request)
+	public RoleOpcionResponse grantPermissionOptions(@RequestBody List<RoleOpcionCreateDto> roleOpcionCreates,  HttpServletRequest request)
 	{
-		return this.roleOptionServiceImpl.grantPermission(roleOpcionCreate, request.getHeader("Authorization"));
+		return this.roleOptionServiceImpl.grantPermission(roleOpcionCreates, "CREATE", request.getHeader("Authorization"));
+	}
+	
+	@PostMapping("/options/unassign")
+	public RoleOpcionResponse notgrantPermissionOptions(@RequestBody List<RoleOpcionCreateDto> roleOpcionCreates,  HttpServletRequest request)
+	{
+		return this.roleOptionServiceImpl.grantPermission(roleOpcionCreates, "DELETE", request.getHeader("Authorization"));
 	}
 	
 	@GetMapping("/test")

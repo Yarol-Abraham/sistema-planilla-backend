@@ -14,4 +14,6 @@ public interface RoleService {
 	
 	public RoleListResponse getUnassignedRoles(String idUsuario, String sessionId);
 	
+	public RoleListResponse getAssignedRoles(String idUsuario, String sessionId);
+	
 }

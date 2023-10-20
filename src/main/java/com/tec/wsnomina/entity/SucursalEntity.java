@@ -46,6 +46,10 @@ public class SucursalEntity {
 	@OneToMany(mappedBy = "sucursal")
 	private List<UsuarioEntity> usuarios;
 	
+	@OneToMany(mappedBy = "sucursal")
+	private List<EmpleadoEntity> empleados;
+
+	
 	public EmpresaEntity getEmpresa() {
 		return empresa;
 	}

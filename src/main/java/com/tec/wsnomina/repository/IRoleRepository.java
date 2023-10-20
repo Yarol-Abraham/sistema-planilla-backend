@@ -13,4 +13,7 @@ public interface IRoleRepository extends JpaRepository<RoleEntity, Integer> {
 	 @Query("SELECT r FROM RoleEntity r WHERE r NOT IN (SELECT ur FROM UsuarioEntity u JOIN u.roles ur WHERE u.idUsuario = :idUsuario)")
 	 List<RoleEntity> obtenerRolesNoAsignadosAlUsuario(String idUsuario);
 	
+	 @Query("SELECT r FROM RoleEntity r WHERE r IN (SELECT ur FROM UsuarioEntity u JOIN u.roles ur WHERE u.idUsuario = :idUsuario)")
+	 List<RoleEntity> obtenerRolesAsignadosAlUsuario(String idUsuario);
+	
 }

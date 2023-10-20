@@ -67,7 +67,25 @@ public class EmpresaEntity {
 	@OneToMany(mappedBy = "empresa")
 	private List<SucursalEntity> sucursales;
 	
+	@OneToMany(mappedBy = "empresa")
+	private List<DepartamentoEntity> departamentos;
 	
+	public List<SucursalEntity> getSucursales() {
+		return sucursales;
+	}
+
+	public void setSucursales(List<SucursalEntity> sucursales) {
+		this.sucursales = sucursales;
+	}
+
+	public List<DepartamentoEntity> getDepartamentos() {
+		return departamentos;
+	}
+
+	public void setDepartamentos(List<DepartamentoEntity> departamentos) {
+		this.departamentos = departamentos;
+	}
+
 	public int getIdEmpresa() {
 		return idEmpresa;
 	}
