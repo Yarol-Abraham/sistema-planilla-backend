@@ -1,35 +1,27 @@
 package com.tec.wsnomina.entity;
 
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(name = "puesto")
-public class PuestoEntity {
+@Table(name = "tipo_acceso")
+public class TipoAccesoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdPuesto")
-    private int idPuesto;
+    @Column(name = "IdTipoAcceso")
+    private int idTipoAcceso;
 
     @Column(name = "Nombre", nullable = false)
     private String nombre;
-
-    @ManyToOne
-    @JoinColumn(name = "IdDepartamento", referencedColumnName = "IdDepartamento", insertable = false, updatable = false)
-    private DepartamentoEntity departamento;
 
     @Column(name = "FechaCreacion", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -45,15 +37,12 @@ public class PuestoEntity {
     @Column(name = "UsuarioModificacion")
     private String usuarioModificacion;
 
-    @OneToMany(mappedBy = "puesto")
-    private List<EmpleadoEntity> empleados;
-
-	public int getIdPuesto() {
-		return idPuesto;
+	public int getIdTipoAcceso() {
+		return idTipoAcceso;
 	}
 
-	public void setIdPuesto(int idPuesto) {
-		this.idPuesto = idPuesto;
+	public void setIdTipoAcceso(int idTipoAcceso) {
+		this.idTipoAcceso = idTipoAcceso;
 	}
 
 	public String getNombre() {
@@ -62,14 +51,6 @@ public class PuestoEntity {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public DepartamentoEntity getDepartamento() {
-		return departamento;
-	}
-
-	public void setDepartamento(DepartamentoEntity departamento) {
-		this.departamento = departamento;
 	}
 
 	public Date getFechaCreacion() {
@@ -104,13 +85,5 @@ public class PuestoEntity {
 		this.usuarioModificacion = usuarioModificacion;
 	}
 
-	public List<EmpleadoEntity> getEmpleados() {
-		return empleados;
-	}
-
-	public void setEmpleados(List<EmpleadoEntity> empleados) {
-		this.empleados = empleados;
-	}
-
-   
+  
 }

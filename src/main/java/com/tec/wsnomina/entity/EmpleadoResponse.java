@@ -1,12 +1,12 @@
 package com.tec.wsnomina.entity;
- 
-import com.tec.wsnomina.dto.PersonaDto;
 
-public class PersonaResponse {
+import com.tec.wsnomina.dto.EmpleadoCreateDto;
+
+public class EmpleadoResponse {
 	
 	private String strResponseCode = "";
 	private String strResponseMessage = "";
-	private PersonaDto persona = new PersonaDto();
+	private EmpleadoCreateDto empleado = new EmpleadoCreateDto();
 	
 	public String getStrResponseCode() {
 		return strResponseCode;
@@ -20,11 +20,11 @@ public class PersonaResponse {
 	public void setStrResponseMessage(String strResponseMessage) {
 		this.strResponseMessage = strResponseMessage;
 	}
-	public PersonaDto getPersona() {
-		return persona;
+	public EmpleadoCreateDto getEmpleado() {
+		return empleado;
 	}
-	public void setPersona(PersonaDto persona) {
-		this.persona = persona;
+	public void setEmpleado(EmpleadoCreateDto empleado) {
+		this.empleado = empleado;
 	}
 	
 }
