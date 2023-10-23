@@ -22,6 +22,10 @@ import com.tec.wsnomina.entity.SessionInformationResponse;
 import com.tec.wsnomina.entity.StatusEmpleadoEntity;
 import com.tec.wsnomina.entity.SucursalEntity;
 import com.tec.wsnomina.repository.IEmpleadoRepository;
+import com.tec.wsnomina.repository.IPersonaRepository;
+import com.tec.wsnomina.repository.IPuestoRepository;
+import com.tec.wsnomina.repository.IStatusEmpleadoRepository;
+import com.tec.wsnomina.repository.ISucursalRepository;
 import com.tec.wsnomina.utils.Methods;
 import com.tec.wsnomina.utils.Utils;
 
@@ -30,6 +34,18 @@ public class EmpleadoServicelmpl implements EmpleadoService {
 
 	@Autowired
 	private IEmpleadoRepository iEmpleadoRepository;
+	
+	@Autowired
+	private IPersonaRepository iPersonaRepository;
+	
+	@Autowired
+	private IPuestoRepository iPuestoRepository;
+	
+	@Autowired
+	private ISucursalRepository iUISucursalRepository;
+	
+	@Autowired
+	private IStatusEmpleadoRepository iUStatusEmpleadoRepository;
 	
 	@Autowired
 	private SessionServiceImpl sessionServiceImpl;
@@ -71,7 +87,7 @@ public class EmpleadoServicelmpl implements EmpleadoService {
 							),
 							new SucursalDto(empleado.getSucursal().getIdSucursal(), empleado.getSucursal().getNombre()),
 							empleado.getFechaContratacion(), 
-							new PuestoDto(empleado.getPuesto().getIdPuesto(), empleado.getPuesto().getNombre()), 
+							new PuestoDto(empleado.getPuesto().getIdPuesto(), empleado.getPuesto().getNombre(), empleado.getPuesto().getDepartamento().getIdDepartamento()), 
 							empleado.getStatusEmpleado().getIdStatusEmpleado(),
 							empleado.getIngresoSueldoBase(), 
 							empleado.getIngresoBonificacionDecreto(), 
@@ -115,7 +131,6 @@ public class EmpleadoServicelmpl implements EmpleadoService {
 				empleadoResponse.setStrResponseMessage("error, verifique que todos los campos sean correctos.");
 				return empleadoResponse;
 			}
-			System.out.println("PERSONA: " + empleadodto.getIdPersona());
 			
 			EmpleadoEntity empleadoEntity = new EmpleadoEntity();
 			
@@ -149,9 +164,39 @@ public class EmpleadoServicelmpl implements EmpleadoService {
 			
 			empleadodto.setIdEmpleado(empleadoEntity.getIdEmpleado());
 			
+			PersonaEntity personacreate = this.iPersonaRepository.findById(empleadodto.getIdPersona()).get();
+			puesto = this.iPuestoRepository.findById(empleadoEntity.getPuesto().getIdPuesto()).get();
+			sucursal = this.iUISucursalRepository.findById(empleadoEntity.getSucursal().getIdSucursal()).get();
+			statusEmpleadoEntity = this.iUStatusEmpleadoRepository.findById(empleadoEntity.getStatusEmpleado().getIdStatusEmpleado()).get();
+			
+			EmpleadoDto empleadoDto = new EmpleadoDto(empleadodto.getIdEmpleado(), 
+					new PersonaDto(
+							personacreate.getIdPersona(), 
+							personacreate.getNombre(), 
+							personacreate.getApellido(),
+							personacreate.getFechaNacimiento(),
+							personacreate.getGenero().getIdGenero(),
+							personacreate.getGenero().getNombre(),
+							personacreate.getDireccion(),
+							personacreate.getTelefono(),
+							personacreate.getCorreoElectronico(),
+							personacreate.getEstadoCivil().getNombre(),
+							personacreate.getEstadoCivil().getIdEstadoCivil()
+					),
+					new SucursalDto(sucursal.getIdSucursal(), sucursal.getNombre()),
+					empleadoEntity.getFechaContratacion(), 
+					new PuestoDto(puesto.getIdPuesto(), puesto.getNombre(), puesto.getDepartamento().getIdDepartamento()), 
+					statusEmpleadoEntity.getIdStatusEmpleado(),
+					empleadoEntity.getIngresoSueldoBase(), 
+					empleadoEntity.getIngresoBonificacionDecreto(), 
+					empleadoEntity.getIngresoOtrosIngresos(),
+					empleadoEntity.getDescuentoIgss(), 
+					empleadoEntity.getDescuentoIsr(), 
+					empleadoEntity.getDescuentoInasistencias());
+			
 			empleadoResponse.setStrResponseCode(methods.GETSUCCESS());
 			empleadoResponse.setStrResponseMessage("empleado registrado");
-			empleadoResponse.setEmpleado(empleadodto);
+			empleadoResponse.setEmpleado(empleadoDto);
 		}
 		catch(Exception ex)
 		{
@@ -194,11 +239,11 @@ public class EmpleadoServicelmpl implements EmpleadoService {
 				empleadoResponse.setStrResponseMessage("error, empleado no existe");
 				return empleadoResponse;
 			}
+			EmpleadoEntity empleadoEntity = new EmpleadoEntity();
+			//PuestoEntity puestoEntity = new PuestoEntity();
+			//puestoEntity.setIdPuesto(empleadodto.getIdPuesto());
 			
-			PuestoEntity puestoEntity = new PuestoEntity();
-			puestoEntity.setIdPuesto(empleadodto.getIdPuesto());
-			
-			empleado.get().setPuesto(puestoEntity);
+			empleado.get().getPuesto().setIdPuesto(empleadodto.getIdPuesto());
 			empleado.get().setIngresoSueldoBase(empleadodto.getIngresoSueldoBase());
 			empleado.get().setDescuentoIgss(empleadodto.getDescuentoIgss());
 			empleado.get().setDescuentoInasistencias(empleadodto.getDescuentoInasistencias());
@@ -208,16 +253,42 @@ public class EmpleadoServicelmpl implements EmpleadoService {
 			empleado.get().setUsuarioModificacion(sessionInformationResponse.getStrIdUsuario());
 			empleado.get().setFechaModificacion(new Date());
 		
-			this.iEmpleadoRepository.save(empleado.get());
+			empleadoEntity = this.iEmpleadoRepository.save(empleado.get());
+			
+			EmpleadoDto empleadoDto = new EmpleadoDto(empleadodto.getIdEmpleado(), 
+					new PersonaDto(
+							empleadoEntity.getPersona().getIdPersona(), 
+							empleadoEntity.getPersona().getNombre(), 
+							empleadoEntity.getPersona().getApellido(),
+							empleadoEntity.getPersona().getFechaNacimiento(),
+							empleadoEntity.getPersona().getGenero().getIdGenero(),
+							empleadoEntity.getPersona().getGenero().getNombre(),
+							empleadoEntity.getPersona().getDireccion(),
+							empleadoEntity.getPersona().getTelefono(),
+							empleadoEntity.getPersona().getCorreoElectronico(),
+							empleadoEntity.getPersona().getEstadoCivil().getNombre(),
+							empleadoEntity.getPersona().getEstadoCivil().getIdEstadoCivil()
+					),
+					new SucursalDto(empleadoEntity.getSucursal().getIdSucursal(), empleadoEntity.getSucursal().getNombre()),
+					empleadoEntity.getFechaContratacion(), 
+					new PuestoDto(empleadoEntity.getPuesto().getIdPuesto(), empleadoEntity.getPuesto().getNombre(), empleadoEntity.getPuesto().getDepartamento().getIdDepartamento()), 
+					empleadoEntity.getStatusEmpleado().getIdStatusEmpleado(),
+					empleadoEntity.getIngresoSueldoBase(), 
+					empleadoEntity.getIngresoBonificacionDecreto(), 
+					empleadoEntity.getIngresoOtrosIngresos(),
+					empleadoEntity.getDescuentoIgss(), 
+					empleadoEntity.getDescuentoIsr(), 
+					empleadoEntity.getDescuentoInasistencias());
 			
 			empleadoResponse.setStrResponseCode(methods.GETSUCCESS());
 			empleadoResponse.setStrResponseMessage("registro actualizado");
-			empleadoResponse.setEmpleado(empleadodto);
+			empleadoResponse.setEmpleado(empleadoDto);
 			
 			return empleadoResponse;
 		}
 		catch(Exception ex)
 		{
+			System.out.println("error al actualizar: " + ex.getMessage());
 			empleadoResponse.setStrResponseCode(methods.GETERROR());
 			empleadoResponse.setStrResponseMessage("error al intentar actualizar el registro");
 		}

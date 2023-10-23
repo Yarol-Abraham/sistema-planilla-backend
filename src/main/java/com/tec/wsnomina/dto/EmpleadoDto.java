@@ -19,7 +19,7 @@ public class EmpleadoDto {
     private BigDecimal descuentoIsr;
     private BigDecimal descuentoInasistencias;
 	
-    
+    public EmpleadoDto() {}
     public EmpleadoDto(int idEmpleado, PersonaDto persona, SucursalDto sucursal, Date fechaContratacion,
 			PuestoDto puesto, int idStatusEmpleado, BigDecimal ingresoSueldoBase, BigDecimal ingresoBonificacionDecreto,
 			BigDecimal ingresoOtrosIngresos, BigDecimal descuentoIgss, BigDecimal descuentoIsr,

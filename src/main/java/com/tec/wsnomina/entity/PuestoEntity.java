@@ -28,7 +28,7 @@ public class PuestoEntity {
     private String nombre;
 
     @ManyToOne
-    @JoinColumn(name = "IdDepartamento", referencedColumnName = "IdDepartamento", insertable = false, updatable = false)
+    @JoinColumn(name = "IdDepartamento", referencedColumnName = "IdDepartamento")
     private DepartamentoEntity departamento;
 
     @Column(name = "FechaCreacion", nullable = false)

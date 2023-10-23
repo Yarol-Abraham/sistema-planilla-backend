@@ -26,7 +26,7 @@ public class GenerateToken {
      {
     	 long	TIME_CURRENT_SYSTEM = System.currentTimeMillis(); 
          long	TIME_MILLISECOND	= 900000; // equivalent: 15 minutes
-         long	DUPLICATE_TIME 		= 1; // example: 900000 * 4 -> 1 hour; 
+         long	DUPLICATE_TIME 		= 2; // example: 900000 * 4 -> 1 hour; 
          
     	 try {
              String jws = Jwts.builder()

@@ -34,8 +34,6 @@ public class MenuServiceImpl implements MenuService {
 	@Autowired
 	private IRoleOptionRepository iRoleOptionRepository;
 	
-	
-	
 	// services
 	@Autowired
 	private SessionServiceImpl sessionServiceImpl;
