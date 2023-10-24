@@ -2,8 +2,8 @@ package com.tec.wsnomina.dto;
 
 public class PuestoCreateDto {
 
-	private int idDepartamento;
-	private String nombre;
+	private int idDepartamento = 0;
+	private String nombre = "";
 	
 	public PuestoCreateDto(String nombre, int idDepartamento)
 	{

@@ -5,11 +5,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tec.wsnomina.dto.PuestoCreateDto;
-import com.tec.wsnomina.dto.PuestoDepartamentoDto;
+import com.tec.wsnomina.dto.PuestoDto;
 import com.tec.wsnomina.entity.PuestoListDeparmentResponse;
 import com.tec.wsnomina.entity.PuestoResponse;
 import com.tec.wsnomina.services.PuestoServicelmpl;
@@ -31,13 +33,13 @@ public class PuestoController {
 	}
 	
 	@PostMapping("/create")
-	public  PuestoResponse createPosition(PuestoCreateDto puestoCreateDto,  HttpServletRequest request)
+	public  PuestoResponse createPosition(@RequestBody PuestoCreateDto puestoCreateDto,  HttpServletRequest request)
 	{
 		return this.puestoServicelmpl.createPosition(puestoCreateDto,  request.getHeader("Authorization"));
 	}
 	
-	@PostMapping("/update")
-	public  PuestoResponse updatePosition(PuestoDepartamentoDto puestoCreateDto,  HttpServletRequest request)
+	@PutMapping("/update")
+	public  PuestoResponse updatePosition(@RequestBody PuestoDto puestoCreateDto,  HttpServletRequest request)
 	{
 		return this.puestoServicelmpl.updatePosition(puestoCreateDto, request.getHeader("Authorization"));
 	}

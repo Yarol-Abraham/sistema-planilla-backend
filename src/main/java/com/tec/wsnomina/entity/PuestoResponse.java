@@ -1,12 +1,12 @@
 package com.tec.wsnomina.entity;
 
-import com.tec.wsnomina.dto.PuestoDepartamentoDto;
+import com.tec.wsnomina.dto.PuestoDto;
 
 public class PuestoResponse {
 	
 	private String strResponseCode = "";
 	private String strResponseMessage = "";
-	private PuestoDepartamentoDto puesto;
+	private PuestoDto puesto;
 	
 	public String getStrResponseCode() {
 		return strResponseCode;
@@ -24,11 +24,11 @@ public class PuestoResponse {
 		this.strResponseMessage = strResponseMessage;
 	}
 	
-	public PuestoDepartamentoDto getPuesto() {
+	public PuestoDto getPuesto() {
 		return puesto;
 	}
 	
-	public void setPuesto(PuestoDepartamentoDto puesto) {
+	public void setPuesto(PuestoDto puesto) {
 		this.puesto = puesto;
 	}
 

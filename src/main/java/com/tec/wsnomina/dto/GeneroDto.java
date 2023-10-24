@@ -2,13 +2,13 @@ package com.tec.wsnomina.dto;
 
 public class GeneroDto {
 
-	private String idGenero = "";
+	private int idGenero = 0;
 	private String nombre = "";
 	
-	public String getIdGenero() {
+	public int getIdGenero() {
 		return idGenero;
 	}
-	public void setIdGenero(String idGenero) {
+	public void setIdGenero(int idGenero) {
 		this.idGenero = idGenero;
 	}
 	public String getNombre() {

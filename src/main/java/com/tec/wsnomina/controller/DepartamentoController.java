@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tec.wsnomina.entity.DepartamentoListResponse;
 import com.tec.wsnomina.services.DepartamentoServicelmpl;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController

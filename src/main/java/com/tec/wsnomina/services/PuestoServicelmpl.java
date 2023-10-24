@@ -52,10 +52,21 @@ public class PuestoServicelmpl implements PuestoService {
 				return puestoListResponse;
 			}
 			
-			List<PuestoDto> puestos = this.iPuestoRepository.findByDepartamentoIdDepartamento(idDepartamento)
-									.stream()
-									.map( puesto -> new PuestoDto( puesto.getIdPuesto(), puesto.getNombre(), puesto.getDepartamento().getIdDepartamento()) )
-									.collect(Collectors.toList());
+			List<PuestoDto> puestos;
+			
+			if(idDepartamento > 0)
+			{
+				puestos = this.iPuestoRepository.findByDepartamentoIdDepartamento(idDepartamento)
+						.stream()
+						.map( puesto -> new PuestoDto( puesto.getIdPuesto(), puesto.getNombre(), puesto.getDepartamento().getIdDepartamento()) )
+						.collect(Collectors.toList());
+			}
+			else {
+				puestos = this.iPuestoRepository.findAll()
+						.stream()
+						.map( puesto -> new PuestoDto( puesto.getIdPuesto(), puesto.getNombre(), puesto.getDepartamento().getIdDepartamento()) )
+						.collect(Collectors.toList());
+			}
 			
 			puestoListResponse.setStrResponseCode(methods.GETSUCCESS());
 			puestoListResponse.setStrResponseMessage("datos obtenidos");
@@ -103,13 +114,12 @@ public class PuestoServicelmpl implements PuestoService {
 			puesto.setUsuarioCreacion(sessionInformationResponse.getStrIdUsuario());
 			
 			puesto = this.iPuestoRepository.save(puesto);
-			PuestoDepartamentoDto puestoDto = new PuestoDepartamentoDto(puesto.getIdPuesto(),puesto.getNombre(),
-												new DepartamentoDto(puesto.getDepartamento().getIdDepartamento(), puesto.getDepartamento().getNombre())
-											);
-			
-			puestoResponse.setStrResponseCode(methods.GETERROR());
+		/*	PuestoDepartamentoDto puestoDto = 	new PuestoDepartamentoDto(puesto.getIdPuesto(),puesto.getNombre(),
+												new DepartamentoDto(puesto.getDepartamento().getIdDepartamento(), puesto.getDepartamento().getNombre()));
+			*/
+			puestoResponse.setStrResponseCode(methods.GETSUCCESS());
 			puestoResponse.setStrResponseMessage("puesto creado exitosamente");
-			puestoResponse.setPuesto(puestoDto);
+			puestoResponse.setPuesto(new PuestoDto( puesto.getIdPuesto(), puesto.getNombre(), puesto.getDepartamento().getIdDepartamento()));
 			
 		}
 		catch(Exception ex)
@@ -122,7 +132,7 @@ public class PuestoServicelmpl implements PuestoService {
 	}
 
 	@Override
-	public PuestoResponse updatePosition(PuestoDepartamentoDto puestoCreateDto, String sessionId) 
+	public PuestoResponse updatePosition(PuestoDto puestoCreateDto, String sessionId) 
 	{
 		PuestoResponse puestoResponse = new PuestoResponse();
 		
@@ -137,31 +147,30 @@ public class PuestoServicelmpl implements PuestoService {
 				return puestoResponse;
 			}
 			
-			if(!puestoCreateDto.validate())
-			{
-				puestoResponse.setStrResponseCode(methods.GETERROR());
-				puestoResponse.setStrResponseMessage("error, verifique que todos los campos sean correctos.");
-				return puestoResponse;
-			}
+			Optional<PuestoEntity> OpuestoEntity = this.iPuestoRepository.findById(puestoCreateDto.getIdPuesto());
 			
-			Optional<PuestoEntity> puestoEntity = this.iPuestoRepository.findById(puestoCreateDto.getIdPuesto());
-			
-			if(puestoEntity.isEmpty())
+			if(OpuestoEntity.isEmpty())
 			{
 				puestoResponse.setStrResponseCode(methods.GETERROR());
 				puestoResponse.setStrResponseMessage("error, el puesto no existe");
 				return puestoResponse;
 			}
+			PuestoEntity puestoEntity = OpuestoEntity.get();
+			DepartamentoEntity departamentoEntity = new DepartamentoEntity();
+			departamentoEntity.setIdDepartamento(puestoCreateDto.getIdDepartamento());
 			
-			puestoEntity.get().getDepartamento().setIdDepartamento(puestoCreateDto.getDepartamento().getIdDepartamento());
-			puestoEntity.get().setNombre(puestoCreateDto.getNombre());
+			puestoEntity.setDepartamento(departamentoEntity);
+			puestoEntity.setNombre(puestoCreateDto.getNombre());
+			
+			puestoEntity = this.iPuestoRepository.save(puestoEntity);
 			
 			puestoResponse.setStrResponseCode(methods.GETSUCCESS());
 			puestoResponse.setStrResponseMessage("puesto actualizado correctamente");
-			puestoResponse.setPuesto(puestoCreateDto);
+			puestoResponse.setPuesto(new PuestoDto( puestoEntity.getIdPuesto(), puestoEntity.getNombre(),  puestoEntity.getDepartamento().getIdDepartamento()) );
 		}
 		catch(Exception ex)
 		{
+			System.out.println("error" + ex.getMessage());
 			puestoResponse.setStrResponseCode(methods.GETERROR());
 			puestoResponse.setStrResponseMessage("error al actualizar el puesto actual");
 		}

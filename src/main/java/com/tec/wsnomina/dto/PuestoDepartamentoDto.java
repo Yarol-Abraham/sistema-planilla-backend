@@ -6,7 +6,6 @@ public class PuestoDepartamentoDto {
     private String nombre;
     private DepartamentoDto departamento;
     
-    
 	public PuestoDepartamentoDto(int idPuesto, String nombre, DepartamentoDto departamento) 
 	{
 		this.idPuesto = idPuesto;
